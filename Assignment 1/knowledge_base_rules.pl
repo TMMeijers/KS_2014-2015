@@ -59,26 +59,6 @@ all_relations(X, Rels) :-
 	concept_relations(X, XRels),
 	merge_relations_ordered(ARels,XRels,Rels).
 
-ar(X, Rels) :-
-	is_root_concept(X), !,
-	write('AR ROOT: '), write(X), nl,
-	concept_relations(X, Rels),
-	write('AR ROOT RELS: '), write(Rels), nl.
-
-ar(X, Rels) :-
-	descends_from(X, Y),
-	concept_relations(X, XRels),
-	!,
-	ar(Y, YRels),
-	write('merge: '), write(YRels),nl,
-	write('   with: '),write(XRels),nl,
-	merge_relations_ordered(YRels, XRels, Rels),
-	write('Res: '),write(Rels),nl.
-
-ar(X, Rels) :-
-	descends_from(X, Y),
-	ar(Y, Rels).
-
 %% takes two lists of relations [(VR1,Rel1),(VR2,Rel2)..]
 %% and merges them. If second list has an element that already
 %% sits in first list, the element of the _SECOND_ list gets
@@ -86,11 +66,7 @@ ar(X, Rels) :-
 merge_relations_ordered([],L,L).
 
 merge_relations_ordered([(VR, RelName)|T],L,[(VR, RelName)|M]):-
-	%write('VR: '), write(VR), nl,
-	%write('RelName: '), write(RelName), nl,
-	%write('L: '), write(L), nl,
 	\+member((_,RelName), L),
-	%write('passed'),nl,
 	!,
 	merge_relations_ordered(T,L,M).
 
