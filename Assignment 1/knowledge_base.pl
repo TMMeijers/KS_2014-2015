@@ -55,24 +55,31 @@ descends_from(endo_skeleton, skeleton).
 %% brain
 descends_from(brain_with_neocortex, brain).
 
-%% key-value-restrictions
-
+%% KEY-VALUE-RESTRICTIONS
+% Mammals
 has_relation(cangaroo, 2/2, leg).
 has_relation(dolphin, 0/0, leg).
 has_relation(rabbit, 2/2, leg).
-
 has_relation(bird, 2/2, leg).
 
+% Chordata
 has_relation(mammal, 1/1, brain_with_neocortex).
 
-has_relation(arthropoda, 1/1, exo_skeleton).
+% Animal
 has_relation(chordata, 1/1, endo_skeleton).
 
-% top level relations
+
+
+% Animal
+has_relation(arthropoda, 1/1, exo_skeleton).
+
+
+% Top Level
 has_relation(animal, 0/inf, leg).
 has_relation(animal, 1/1, brain).
 has_relation(animal, 1/1, skeleton).
 
+%% ARTHROPODA
 
 %% Adds an item to the knowledge base
 add_descends_from(X, Y) :-
