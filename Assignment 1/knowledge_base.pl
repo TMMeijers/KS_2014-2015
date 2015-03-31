@@ -78,3 +78,11 @@ has_relation(lizard, 1/1, tail).
 descends_from(egg, reproduction).
 descends_from(birth, reproduction).
 
+has_relation(animal, 0/inf, reproduction).
+has_relation(bird, 0/inf, egg).
+has_relation(mammal, 0/inf, birth).
+has_relation(crocodile, 0/inf, egg).
+has_relation(snake, 0/inf, egg).
+has_relation(snake, 0/inf, birth).
+has_relation(lizard, 0/inf, egg).
+has_relation(lizard, 0/inf, birth).
