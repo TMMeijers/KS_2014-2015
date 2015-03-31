@@ -46,6 +46,10 @@ descends_from(brain, body_part).
 descends_from(wings, body_part).
 descends_from(spine, body_part).
 
+%% Segmented body
+descends_from(segmented_body, body).
+descends_from(body_segment, segmented_body).
+
 %% skeleton
 descends_from(exo_skeleton, skeleton).
 descends_from(endo_skeleton, skeleton).
@@ -69,22 +73,28 @@ has_relation(chordata, 1/1, endo_skeleton).
 has_relation(chordata, 1/1, spine).
 
 % Arachnids
+has_relation(arachnid, 8/8, leg).
+has_relation(arachnid, 2/2, body_segment).
 
 % Insects
+has_relation(insect, 6/6, leg).
+has_relation(insect, 3/3, body_segment).
 
 % Centipedes
+has_relation(centipede, 20/300, leg).
+has_relation(centipede, 15/inf, body_segment).
 
 % Arthropoda
-
-% Animal
 has_relation(arthropoda, 1/1, exo_skeleton).
 has_relation(arthropoda, 1/1, segmented_body).
-
+has_relation(arthropoda, 0/inf, leg).
+has_relation(arthropoda, 0/0, spine).
 
 % Top Level
 has_relation(animal, 0/2, wings).
 has_relation(animal, 0/1, spine).
 has_relation(animal, 0/inf, leg).
+has_relation(animal, 1/inf, body_segment).
 has_relation(animal, 1/1, brain).
 has_relation(animal, 1/1, skeleton).
 
