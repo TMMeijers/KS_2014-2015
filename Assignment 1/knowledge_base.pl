@@ -62,11 +62,14 @@ has_relation(dolphin, 0/0, leg).
 has_relation(rabbit, 2/2, leg).
 has_relation(bird, 2/2, leg).
 has_relation(bird, 2/2, wings).
-has_relation(feathers, 1/1, feathers).
+has_relation(bird, 1/1, feathers).
+has_relation(bird, 0/0, hair).
 
 % Chordata
 has_relation(mammal, 1/1, brain_with_neocortex).
 has_relation(mammal, 1/1, hair).
+% HACK
+%has_relation(mammal, 0/0, feathers).
 
 % Animal
 has_relation(chordata, 1/1, endo_skeleton).
