@@ -1,3 +1,12 @@
+:- dynamic
+	descends_from/2,
+	has_relation/3.
+
+:- discontiguous
+	descends_from/2,
+	has_relation/3,
+	concept/1.
+
 %% Animals
 descends_from(cold_blooded, animal).
 descends_from(warm_blooded, animal).
