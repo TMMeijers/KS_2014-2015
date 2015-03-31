@@ -9,36 +9,52 @@ is_a(X, Z) :-
 	descends_from(X, Y),
 	is_a(Y, Z).
 
-has2(X, VR, Y) :-
+has_inner(X, VR, Y) :-
 	has_relation(X, VR, Y).
 
-has2(X, VR, Y) :-
+has_inner(X, VR, Y) :-
 	is_a(Z, Y),
-	has2(X, VR, Z).
+	has_inner(X, VR, Z).
 
-has2(X, VR, Y) :-
+has_inner(X, VR, Y) :-
 	is_a(X, Z), % find all from which X descends from
-	has2(Z, VR, Y).
+	has_inner(Z, VR, Y).
+
+has(X, (Min/Max, Y)) :-
+	has(X, Min/Max, Y).
 
 has(X, Min/inf, Y) :-
-	has2(X, Min/inf, Y).
+	has_inner(X, Min/inf, Y).
 
 has(X, Min/Max, Y) :-
-	range(L/R, Min/Max),
-	has2(X, L/R, Y).
-
-%%has(X, VR, Y) :-
-%%	range(A/B, VR),
-%%	has(X, A/B, Y).	
+	%range(L/R, Min/Max),
+	has_inner(X, L/R, Y).
 
 range(L/R, Min/inf) :-
 	!,
 	range(L/R, Min/10).
 
 range(L/R, Min/Max) :-
+	number(L),
+	number(R),
+	number(Min),
+	number(Max),
 	between(Min, Max, L),
 	between(Min, Max, R),
 	L =< R.
+
+is_predecessor(X, Y) :-
+	decends_from(Y, X).
+
+match_by_attributes(What, Attributes, X) :-
+	maplist(has(X), Attributes),
+	\+concept(X).
+
+classify(What, Attributes, NewSet) :-
+	setof(C,
+	      match_by_attributes(What, Attributes, C),
+	      NewSet).
+	      
 
 %categorize(What, Attributes, X) :-
 %	maplist(evaluate(X), Attributes),
