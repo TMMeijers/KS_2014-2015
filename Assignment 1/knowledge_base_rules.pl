@@ -30,8 +30,8 @@ range(L/R, Min/Max) :-
 	R =< 10,
 	L =< R.
 
-categorize(What, Attributes, X) :-
-	maplist(evaluate(X), Attributes),
+%categorize(What, Attributes, X) :-
+%	maplist(evaluate(X), Attributes),
 	
 
 :- dynamic(found/1).
