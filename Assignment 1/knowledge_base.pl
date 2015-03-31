@@ -45,6 +45,8 @@ descends_from(skeleton, body_part).
 descends_from(brain, body_part).
 descends_from(wings, body_part).
 descends_from(spine, body_part).
+descends_from(hair, body_part).
+descends_from(feathers, body_part).
 
 %% skeleton
 descends_from(exo_skeleton, skeleton).
@@ -60,9 +62,11 @@ has_relation(dolphin, 0/0, leg).
 has_relation(rabbit, 2/2, leg).
 has_relation(bird, 2/2, leg).
 has_relation(bird, 2/2, wings).
+has_relation(feathers, 1/1, feathers).
 
 % Chordata
 has_relation(mammal, 1/1, brain_with_neocortex).
+has_relation(mammal, 1/1, hair).
 
 % Animal
 has_relation(chordata, 1/1, endo_skeleton).
@@ -82,6 +86,8 @@ has_relation(arthropoda, 1/1, segmented_body).
 
 
 % Top Level
+has_relation(animal, 0/1, feathers).
+has_relation(animal, 0/1, hair).
 has_relation(animal, 0/2, wings).
 has_relation(animal, 0/1, spine).
 has_relation(animal, 0/inf, leg).
