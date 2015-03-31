@@ -1,23 +1,35 @@
 :- dynamic(descends_from/2).
 
-descends_from(arachnide, chelicerate).
-descends_from(insect, crustacean).
-descends_from(centipede, labiatae).
+%%% ANIMAL HIERARCHY
 
-descends_from(chelicerate, arthropoda).
-descends_from(crustacean, arthropoda).
-descends_from(labiatae, arthropoda).
-
+%% CHORDATA
+%% Phyla
+descends_from(chordata, animal).
+%% Subphyla
+descends_from(vertebrata, chordata).
+%% Classes
 descends_from(amphibie, vertebrata).
 descends_from(reptile, vertebrata).
 descends_from(bird, vertebrata).
 descends_from(mammal, vertebrata).
 descends_from(ostheichthye, vertebrata).
+%% Amphibie
+descends_from(amphibie, 
 
-descends_from(vertebrata, chordata).
+%% ARTHROPODA
+%% Phyla
+descends_from(arthropoda, animal).
+%% Subphyla
+descends_from(chelicerate, arthropoda).
+descends_from(crustacean, arthropoda).
+descends_from(labiatae, arthropoda).
+%% Classes
+descends_from(arachnide, chelicerate).
+descends_from(insect, crustacean).
+descends_from(centipede, labiatae).
 
-descends_from(chordata, animal).
 
+%%% OBJECT HIERARCHY
 descends_from(leg, body_part).
 
 descends_from(skeleton, body_part).
