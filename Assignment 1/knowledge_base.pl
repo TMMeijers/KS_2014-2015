@@ -15,10 +15,14 @@ descends_from(mammal, vertebrata).
 descends_from(ostheichthye, vertebrata).
 %% Amphibie
 descends_from(amphibie, lizard).
+descends_from(amphibie, frog).
+
+%% Bird
+descends_from(pinguin, bird).
+descends_from(eagle, bird).
 
 %% Mammal
 descends_from(cangaroo, mammal).
-
 descends_from(rabbit, mammal).
 descends_from(dolphin, mammal).
 	      
@@ -43,10 +47,10 @@ descends_from(mite, arachnid).
 
 %%% OBJECT HIERARCHY
 descends_from(leg, body_part).
-
-%% body parts
 descends_from(skeleton, body_part).
 descends_from(brain, body_part).
+descends_from(wings, body_part).
+descends_from(spine, body_part).
 
 %% skeleton
 descends_from(exo_skeleton, skeleton).
@@ -61,13 +65,14 @@ has_relation(cangaroo, 2/2, leg).
 has_relation(dolphin, 0/0, leg).
 has_relation(rabbit, 2/2, leg).
 has_relation(bird, 2/2, leg).
+has_relation(bird, 2/2, wings).
 
 % Chordata
 has_relation(mammal, 1/1, brain_with_neocortex).
 
 % Animal
 has_relation(chordata, 1/1, endo_skeleton).
-
+has_relation(chordata, 1/1, spine).
 
 
 % Animal
@@ -75,6 +80,8 @@ has_relation(arthropoda, 1/1, exo_skeleton).
 
 
 % Top Level
+has_relation(animal, 0/2, wings).
+has_relation(animal, 0/1, spine).
 has_relation(animal, 0/inf, leg).
 has_relation(animal, 1/1, brain).
 has_relation(animal, 1/1, skeleton).
