@@ -57,22 +57,23 @@ all_relations(X, Rels) :-
 	all_relations(Y, ARels),
 	!,
 	concept_relations(X, XRels),
-	merge_relations_ordered(ARels,XRels,Rels).
+	merge_relations_ordered(ARels, XRels, Rels).
 
 %% takes two lists of relations [(VR1,Rel1),(VR2,Rel2)..]
 %% and merges them. If second list has an element that already
 %% sits in first list, the element of the _SECOND_ list gets
 %% chosen
-merge_relations_ordered([],L,L).
+merge_relations_ordered([], L, L).
 
-merge_relations_ordered([(VR, RelName)|T],L,[(VR, RelName)|M]):-
-	\+member((_,RelName), L),
-	!,
-	merge_relations_ordered(T,L,M).
+merge_relations_ordered([(_, Rel)|T], L, M):-
+	% when relation is already in second list, drop it
+	% and go on with Tail
+	member((_,Rel), L), !,
+	merge_relations_ordered(T, L, M).
 
-merge_relations_ordered([_|T],[H|LT], [H|M]) :-
-	!,
-	merge_relations_ordered(T,LT,M).
+merge_relations_ordered([H|T], L, [H|M]) :-
+	% when relation is not in second list, prepend it
+	merge_relations_ordered(T, L, M).
 
 %% Evaluates if some relation holds for a item
 %% E.g.,
