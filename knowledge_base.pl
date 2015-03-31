@@ -1,32 +1,33 @@
 
 
-is_a(arachnide, chelicerate).
-is_a(insect, crustacean).
-is_a(centipede, labiatae).
-
-is_a(chelicerate, arthropoda).
-is_a(crustacean, arthropoda).
-is_a(labiatae, arthropoda).
 
 
+descends_from(arachnide, chelicerate).
+descends_from(insect, crustacean).
+descends_from(centipede, labiatae).
 
-is_a(amphibie, vertebrata).
-is_a(reptile, vertebrata).
-is_a(bird, vertebrata).
-is_a(mammal, vertebrata).
-is_a(ostheichthye, vertebrata).
+descends_from(chelicerate, arthropoda).
+descends_from(crustacean, arthropoda).
+descends_from(labiatae, arthropoda).
 
 
-is_a(vertebrata, chordata).
 
-is_a(chordata, animal).
+descends_from(amphibie, vertebrata).
+descends_from(reptile, vertebrata).
+descends_from(bird, vertebrata).
+descends_from(mammal, vertebrata).
+descends_from(ostheichthye, vertebrata).
 
-is_a(stomme_vogel, bird).
 
-is_a(X, X) :-
-	X .=. X.
+descends_from(vertebrata, chordata).
+
+descends_from(chordata, animal).
+
+descends_from(stomme_vogel, bird).
+
+is_a(X, Y) :-
+	descends_from(X, Y).
 
 is_a(X, Z) :-
-	is_a(X, Y),
+	descends_from(X, Y),
 	is_a(Y, Z).
-
