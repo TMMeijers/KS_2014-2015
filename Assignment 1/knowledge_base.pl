@@ -25,6 +25,17 @@ descends_from(skeleton, body_part).
 descends_from(exo_skeleton, skeleton).
 descends_from(endo_skeleton, skeleton).
 
+%% RELATIONS
+
+has_relation(bird, 2/2, leg).
+
+% top level relations
+has_relation(animal, 0/inf, leg).
+has_relation(arthropoda, 1/1, exo_skeleton).
+has_relation(chordata, 1/1, endo_skeleton).
+has_relation(animal, 1/1, skeleton).
+
+
 %% Adds an item to the knowledge base
 add_descends_from(X, Y) :-
 	X \= Y,
