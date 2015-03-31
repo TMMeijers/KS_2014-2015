@@ -30,7 +30,14 @@ range(L/R, Min/Max) :-
 	R =< 10,
 	L =< R.
 
+categorize(What, Attributes, X) :-
+	maplist(evaluate(X), Attributes),
+	
+
 :- dynamic(found/1).
+
+evaluate(X, (VR, Y)) :-
+	evaluate(X, VR, Y).
 
 evaluate(X, Min/Max, Y) :-
 	retractall(found(has(_,_,_))),
