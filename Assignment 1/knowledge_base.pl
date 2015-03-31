@@ -30,9 +30,16 @@ descends_from(chelicerate, arthropoda).
 descends_from(crustacean, arthropoda).
 descends_from(labiatae, arthropoda).
 %% Classes
-descends_from(arachnide, chelicerate).
+descends_from(arachnid, chelicerate).
 descends_from(insect, crustacean).
 descends_from(centipede, labiatae).
+%% Arachnides
+descends_from(scorpion, arachnid).
+descends_from(spider, arachnid).
+descends_from(mite, arachnid).     
+%% Insects
+
+%% Centipedes
 
 %%% OBJECT HIERARCHY
 descends_from(leg, body_part).
