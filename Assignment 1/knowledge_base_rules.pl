@@ -9,25 +9,35 @@ is_a(X, Z) :-
 	descends_from(X, Y),
 	is_a(Y, Z).
 
-has(X, VR, Y) :-
+has2(X, VR, Y) :-
 	has_relation(X, VR, Y).
 
-has(X, VR, Y) :-
+has2(X, VR, Y) :-
 	is_a(Z, Y),
-	has(X, VR, Z).
+	has2(X, VR, Z).
 
-has(X, VR, Y) :-
+has2(X, VR, Y) :-
 	is_a(X, Z), % find all from which X descends from
-	has(Z, VR, Y).
+	has2(Z, VR, Y).
+
+has(X, Min/inf, Y) :-
+	has2(X, Min/inf, Y).
+
+has(X, Min/Max, Y) :-
+	range(L/R, Min/Max),
+	has2(X, L/R, Y).
 
 %%has(X, VR, Y) :-
 %%	range(A/B, VR),
 %%	has(X, A/B, Y).	
 
+range(L/R, Min/inf) :-
+	!,
+	range(L/R, Min/10).
+
 range(L/R, Min/Max) :-
 	between(Min, Max, L),
 	between(Min, Max, R),
-	R =< 10,
 	L =< R.
 
 %categorize(What, Attributes, X) :-
