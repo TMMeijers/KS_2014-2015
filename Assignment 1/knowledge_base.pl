@@ -68,18 +68,29 @@ has_relation(mammal, 1/1, brain_with_neocortex).
 % Animal
 has_relation(chordata, 1/1, endo_skeleton).
 
+% Arachnids
 
+% Insects
+
+% Centipedes
+
+% Chelicerate
+
+% Crustacaen
+
+% Labiatae
+
+% Arthropoda
 
 % Animal
 has_relation(arthropoda, 1/1, exo_skeleton).
+has_relation(arthopoda, 1/1, segmented_body).
 
 
 % Top Level
 has_relation(animal, 0/inf, leg).
 has_relation(animal, 1/1, brain).
 has_relation(animal, 1/1, skeleton).
-
-%% ARTHROPODA
 
 %% Adds an item to the knowledge base
 add_descends_from(X, Y) :-
