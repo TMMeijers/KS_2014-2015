@@ -9,67 +9,45 @@ is_a(X, Z) :-
 	descends_from(X, Y),
 	is_a(Y, Z).
 
-has_inner(X, VR, Y) :-
-	has_relation(X, VR, Y).
+%% A concept is a root of an inheritance tree, if it does
+%% not have a ancestor
+is_root_concept(X) :-
+	\+descends_from(X, _).
 
-has_inner(X, VR, Y) :-
-	is_a(Z, Y),
-	has_inner(X, VR, Z).
+%% Returns all relations that are _directly_ associated
+%% with a concept. Thus doesn't walk the inheritance tree
+%% back to the root
+concept_relations(X, Rels) :-
+	setof((VR,Rel), has_relation(X, VR, Rel), Rels).
 
-has_inner(X, VR, Y) :-
-	is_a(X, Z), % find all from which X descends from
-	has_inner(Z, VR, Y).
-
-has(X, (Min/Max, Y)) :-
-	has(X, Min/Max, Y).
-
-has(X, Min/inf, Y) :-
-	has_inner(X, Min/inf, Y).
-
-has(X, Min/Max, Y) :-
-	%range(L/R, Min/Max),
-	has_inner(X, L/R, Y).
-
-range(L/R, Min/inf) :-
+%% walks inheritance tree and collects all relations
+%% E.g.,
+%% ?- all_relations(human, X).
+%% X = [ (2/2, arm), (2/2, leg), (0/inf, birth), (0/inf, limb),
+%% (0/inf, reproduction), (1/inf, movement_type)].
+all_relations(X, Rels) :-
+	is_root_concept(X),
 	!,
-	range(L/R, Min/10).
+	concept_relations(X, Rels).
 
-range(L/R, Min/Max) :-
-	number(L),
-	number(R),
-	number(Min),
-	number(Max),
-	between(Min, Max, L),
-	between(Min, Max, R),
-	L =< R.
+all_relations(X, Rels) :-
+	% take ancestor
+	is_a(X, Y),
+	all_relations(Y, ARels),
+	!,
+	concept_relations(X, XRels),
+	merge_relations_ordered(XRels,ARels,Rels).
 
-is_predecessor(X, Y) :-
-	decends_from(Y, X).
+%% takes two lists of relations [(VR1,Rel1),(VR2,Rel2)..]
+%% and merges them. If second list has an element that already
+%% sits in first list, the element of the _first_ list gets
+%% chosen
+merge_relations_ordered([],L,L).
 
-match_by_attributes(What, Attributes, X) :-
-	maplist(has(X), Attributes),
-	\+concept(X).
+merge_relations_ordered([(VR, RelName)|T],L,[(VR, RelName)|M]):-
+	\+ member((_,RelName), L),
+	!,
+	merge_relations_ordered(T,L,M).
 
-classify(What, Attributes, NewSet) :-
-	setof(C,
-	      match_by_attributes(What, Attributes, C),
-	      NewSet).
-	      
-
-%categorize(What, Attributes, X) :-
-%	maplist(evaluate(X), Attributes),
-	
-
-:- dynamic(found/1).
-
-evaluate(X, (VR, Y)) :-
-	evaluate(X, VR, Y).
-
-evaluate(X, Min/Max, Y) :-
-	retractall(found(has(_,_,_))),
-	evaluate_dynamic(X, Min/Max, Y).
-
-evaluate_dynamic(X, Min/Max, Y) :-
-	has(X, Min/Max, Y),
-	not(found(has(X, Min/Max, Y))),
-	assert(found(has(X, Min/Max, Y))).
+merge_relations_ordered([H|T],[_|LT], [H|M]) :-
+	merge_relations_ordered(T,LT,M).
