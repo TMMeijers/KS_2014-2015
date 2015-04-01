@@ -1,5 +1,14 @@
 :- consult(knowledge_base).
 
+%% adds or updates a relation in the knowledge base
+kb_relation_add_or_update(Concept, Min/Max, Rel) :-
+	% relation does exist
+	retractall(has_relation(Concept, _/_, Rel)),
+	assert(has_relation(Concept, Min/Max, Rel)).
+
+kb_relation_add_or_update(Concept, Min/Max, Rel) :-
+	assert(has_relation(Concept, Min/Max, Rel)).
+
 %% Evaluates if X descends directly from Y
 is_a(X, Y) :-
 	descends_from(X, Y).
@@ -9,6 +18,7 @@ is_a(X, Z) :-
 	descends_from(X, Y),
 	is_a(Y, Z).
 
+%% produces a range of numbers expressed as a range
 range(L/R, Min/inf) :-
 	!,
 	range(L/R, Min/10).
@@ -30,16 +40,29 @@ is_root_concept(X) :-
 concept_relations(X, Rels) :-
 	setof((VR,Rel), has_relation(X, VR, Rel), Rels).
 
-%has(X, VR, Y) :-
-%	has_relation(X, VR, Y).
+% classifies a concept according to a list of attributes
+%classify(Concept, AttrList) :-
 
-%has(X, VR, Y) :-%
-%	is_a(Z, Y),
-%	has_inner(X, VR, Z).
+filter([], _, []).
 
-%has(X, VR, Y) :-
-%	is_a(X, Z), % find all from which X descends from
-%	has_inner(Z, VR, Y).
+filter([H|T], Attr, [H|Rest]) :-
+	has(H, Attr),
+	!,
+	filter(T, Attr, Rest).
+
+filter([_|T], Attr, Rest) :-
+	filter(T, Attr, Rest).
+
+%% checks if a relation holds for an animal and all ancestors
+has(Concept, (VR, RelName)) :-
+	has(Concept, VR, RelName).
+	
+has(X, VR, Y) :-
+	relation_holds(X, VR, Y).
+
+has(X, VR, Y) :-
+	is_a(X, Z), % find all from which X descends from
+	has(Z, VR, Y).
 
 %% walks inheritance tree and collects all relations
 %% E.g.,
