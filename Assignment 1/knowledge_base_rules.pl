@@ -9,6 +9,10 @@ kb_relation_add_or_update(Concept, Min/Max, Rel) :-
 kb_relation_add_or_update(Concept, Min/Max, Rel) :-
 	assert(has_relation(Concept, Min/Max, Rel)).
 
+%% find_all_ancestors
+all_ancestors(Concept, Ancestors) :-
+	bagof(X, is_a(Concept, X), Ancestors).
+
 %% Evaluates if X descends directly from Y
 is_a(X, Y) :-
 	descends_from(X, Y).
