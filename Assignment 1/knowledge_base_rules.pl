@@ -129,12 +129,19 @@ merge_relations_ordered([H|T], L, [H|M]) :-
 %% if defined: has_relation(dog, 0/inf, birth)
 %% then: relations_holds(dog, 0/2, birth)
 %% should return true
-relation_holds(X, Min/_, Rel) :-
-	has_relation(X, Min/inf, Rel).
 
-relation_holds(X, Min/Max, Rel) :-
-	range(L/R, Min/Max),
-	has_relation(X, L/R, Rel).
+relation_holds(X, inf/inf, Rel) :-
+	!,
+	has_relation(X, inf/inf, Rel).
+
+relation_holds(X, Low/inf, Rel) :-
+	has_relation(X, Min/inf, Rel),
+	!,
+	Low >= Min.
+
+relation_holds(X, Low/High, Rel) :-
+	has_relation(X, Min/Max, Rel),
+	range(Low/High, Min/Max), !.
 
 %% backtrack
 walk_list([H|_], H).

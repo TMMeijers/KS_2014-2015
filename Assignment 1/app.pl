@@ -97,10 +97,7 @@ add(Concept, Parent, _) :-
 
 % Make sure relations aren't restricting
 add(Concept, Parent , Rels) :-
-	\+classify(Rels, _);
-	(classify(Rels, Possibilities),
-	 \+member(Parent, Possibilities)),
-	!,
+	check_restrictions(Parent, Rels),
 	write('Impossible to add '),
 	write(Concept),
 	write(', relations are restricting this parent.').
@@ -109,6 +106,12 @@ add(Concept, Parent, URels) :-
 	filtered_relions(URels, Rels),
 	assert(descends_from(Concept, Parent)),
 	add_relations(Concept, Rels).
+
+% Helper for add, checks if relations aren't restricting
+check_restrictions(_, []).
+
+check_restrictions(Parent, [H|Rels]) :-
+	
 
 % Helper for add, adds all relations to knowledge base
 add_relations(_, []).
