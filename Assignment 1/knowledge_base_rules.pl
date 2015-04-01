@@ -44,6 +44,9 @@ is_root_concept(X) :-
 concept_relations(X, Rels) :-
 	setof((VR,Rel), has_relation(X, VR, Rel), Rels).
 
+concept_relations(_, []).
+	
+
 % classifies a concept according to a list of attributes
 classify(AttrList, Concepts) :-
 	setof(Concept,
