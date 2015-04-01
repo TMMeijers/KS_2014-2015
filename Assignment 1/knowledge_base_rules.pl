@@ -45,14 +45,6 @@ concept_relations(X, Rels) :-
 	setof((VR,Rel), has_relation(X, VR, Rel), Rels).
 
 concept_relations(_, []).
-	
-
-% classifies a concept according to a list of attributes
-classify(AttrList, Concepts) :-
-	setof(Concept,
-	      foreach(member(Rel, AttrList),
-		      has(Concept, Rel)),
-	      Concepts).
 
 %% checks if a relation holds for an animal and all ancestors
 has(Concept, (VR, RelName)) :-
@@ -83,6 +75,39 @@ all_relations(X, Rels) :-
 	concept_relations(X, XRels),
 	merge_relations_ordered(ARels, XRels, Rels).
 
+%% Does the same as all_relations but filters relations which are
+%% already specified more specifically in the relations list.
+%% E.G. Doesn't include (0/inf, limb) when (2/2, leg) is already
+%% present.
+filtered_relations(X, Rels) :-
+	is_a(X, Y),
+	all_relations(Y, ARels),
+	!,
+	concept_relations(X, XRels),
+	merge_relations_ordered(ARels, XRels, Unfiltered),
+	filter_parent_relations(Unfiltered, Rels).
+
+filter_parent_relations([], []).
+
+% If we have descendants of the relation present drop it.
+filter_parent_relations([H|T], L) :-
+	descendants_present(H, T), !,
+	filter_parent_relations(T, L).
+
+filter_parent_relations([H|T], [H|L]) :-
+	filter_parent_relations(T, L).
+
+% Check if any descendants in the list
+descendants_present((_, Rel), L) :-
+	descends_from(Child, Rel),
+	member((_, Child), L).
+
+% Check for descendants of descendants etc.
+descendants_present((_, Rel), L) :-
+	descends_from(Child, Rel),
+	descendants_present((_, Child), L).
+
+
 %% takes two lists of relations [(VR1,Rel1),(VR2,Rel2)..]
 %% and merges them. If second list has an element that already
 %% sits in first list, the element of the _SECOND_ list gets
@@ -92,7 +117,7 @@ merge_relations_ordered([], L, L).
 merge_relations_ordered([(_, Rel)|T], L, M):-
 	% when relation is already in second list, drop it
 	% and go on with Tail
-	member((_,Rel), L), !,
+	member((_, Rel), L), !,
 	merge_relations_ordered(T, L, M).
 
 merge_relations_ordered([H|T], L, [H|M]) :-

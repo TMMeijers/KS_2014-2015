@@ -1,4 +1,5 @@
 :- dynamic
+	descends_from/1,
 	descends_from/2,
 	has_relation/3.
 
@@ -29,12 +30,6 @@ descends_from(crocodile, reptile).
 descends_from(snake, reptile).
 descends_from(lizard, reptile).
 
-concept(animal).
-concept(warm_blooded).
-concept(cold_blooded).
-concept(mammal).
-concept(bird).
-concept(reptile).
 
 %% Living environment
 
