@@ -39,7 +39,7 @@ concept(reptile).
 %% Living environment
 
 descends_from(walking, movement_type).
-descends_from(swimminmg, movement_type).
+descends_from(swimming, movement_type).
 descends_from(flying, movement_type).
 
 has_relation(animal, 1/inf, movement_type).
