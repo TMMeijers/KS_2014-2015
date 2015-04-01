@@ -41,17 +41,11 @@ concept_relations(X, Rels) :-
 	setof((VR,Rel), has_relation(X, VR, Rel), Rels).
 
 % classifies a concept according to a list of attributes
-%classify(Concept, AttrList) :-
-
-filter([], _, []).
-
-filter([H|T], Attr, [H|Rest]) :-
-	has(H, Attr),
-	!,
-	filter(T, Attr, Rest).
-
-filter([_|T], Attr, Rest) :-
-	filter(T, Attr, Rest).
+classify(AttrList, Concepts) :-
+	setof(Concept,
+	      foreach(member(Rel, AttrList),
+		      has(Concept, Rel)),
+	      Concepts).
 
 %% checks if a relation holds for an animal and all ancestors
 has(Concept, (VR, RelName)) :-
