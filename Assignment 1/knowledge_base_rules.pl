@@ -23,9 +23,9 @@ is_a(X, Z) :-
 	is_a(Y, Z).
 
 %% produces a range of numbers expressed as a range
-range(L/R, Min/inf) :-
+range(L/_, Min/inf) :-
 	!,
-	range(L/R, Min/10).
+	L >= Min.
 
 range(L/R, Min/Max) :-
 	number(Min), number(Max),
@@ -73,7 +73,7 @@ all_relations(X, Rels) :-
 	all_relations(Y, ARels),
 	!,
 	concept_relations(X, XRels),
-	merge_relations_ordered(ARels, XRels, Rels).
+	merge_relations_ordered(ARels, XRels, Rels), !.
 
 %% Does the same as all_relations but filters relations which are
 %% already specified more specifically in the relations list.
