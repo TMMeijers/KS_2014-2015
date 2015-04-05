@@ -1,3 +1,14 @@
+%% KENNISSYSTEMEN 2014-2015, UVA
+%%
+%% Contributors: M. Pfundstein & T.M. Meijers
+%% Date: April 5th, 2015
+%%
+%% This file contains all facts currently in the KL_ONE
+%% knowledge system.
+%%
+%% Instructions: Consult ks_assignment1_pfundstein_meijers.pl
+
+
 :- dynamic
 	descends_from/2,
 	has_relation/3.

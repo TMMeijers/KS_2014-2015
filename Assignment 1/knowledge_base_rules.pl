@@ -1,4 +1,13 @@
-:- consult(knowledge_base).
+%% KENNISSYSTEMEN 2014-2015, UVA
+%%
+%% Contributors: M. Pfundstein & T.M. Meijers
+%% Date: April 5th, 2015
+%%
+%% This file contains all the base rules to work with
+%% and check information in the knowledge base.
+%%
+%% Instructions: Consult ks_assignment1_pfundstein_meijers.pl
+
 
 %% adds or updates a relation in the knowledge base
 kb_relation_add_or_update(Concept, Min/Max, Rel) :-

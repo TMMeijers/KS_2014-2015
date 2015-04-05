@@ -1,3 +1,25 @@
+%% KENNISSYSTEMEN 2014-2015, UVA
+%%
+%% Contributors: M. Pfundstein & T.M. Meijers
+%% Date: April 5th, 2015
+%%
+%% Instructions: go1, go2, go3, go4 and go5 (all /0), can all
+%% be used for demonstrations. When trying to run a certain
+%% demonstration for a second time, close your prolog compiler
+%% and consult it in a fresh prolog boot since the demonstrations
+%% assert knowledge into the knowledge base.
+%%
+%% Top-level predicates that can easily be tested by yourself:
+%% add/3 (+concept, +parent, +[relations])
+%% add/2 (+concept, +[relations])
+%% update_abstract_concept/1 (+concept)
+%% update_abstract_concept/2 (+concept, +parent)
+%% update_relations/2 (+concept, +[relations])
+%% show/1 (+concept)
+%% show_unfiltered/1 (+concept)
+%% classify/2 (+[relations], -[concepts])
+
+
 :- consult(knowledge_base).
 :- consult(knowledge_base_rules).
 
