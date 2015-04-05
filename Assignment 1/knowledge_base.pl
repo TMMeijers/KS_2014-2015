@@ -8,7 +8,7 @@
 	concept/1.
 
 %% Animals
-descends_from(entity, animal).
+descends_from(animal, entity).
 
 descends_from(cold_blooded, animal).
 descends_from(warm_blooded, animal).
@@ -31,6 +31,11 @@ descends_from(crocodile, reptile).
 descends_from(snake, reptile).
 descends_from(lizard, reptile).
 
+%% Below are entities used for role restrictions
+
+descends_from(movement_type, entity).
+descends_from(limb, entity).
+descends_from(reproduction, entity).
 
 %% Living environment
 

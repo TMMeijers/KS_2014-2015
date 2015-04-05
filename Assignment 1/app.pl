@@ -16,10 +16,10 @@ print_concept([X]) :-
 	writer([X, ' is not a known concept.']).
 
 print_relation([(Min/Max, Rel)]) :-
-	writer([Rel, '(', Min/Max, ')']).
+	writer([Rel, ' (', Min/Max, ')']).
 
 print_relation([(Min/Max, Rel)|T]) :-
-	writer([Rel, '(', Min/Max, ')', ', ']),
+	writer([Rel, ' (', Min/Max, ')', ', ']),
 	print_relation(T).
 	      
 %% displays all we know about a concept
@@ -115,7 +115,7 @@ add(Concept, _) :-
 	writer(['Impossible to add ', Concept, ', it is already known.']).
 
 add(Concept, []) :-
-	assert(descends_from(entity, Concept)),
+	assert(descends_from(Concept, entity)),
 	writer([Concept, ' added as new superconcept.']), !.
 
 add(Concept, Rels) :-
@@ -165,6 +165,49 @@ member_and_inrange((Low/High, Rel), [(Min/Max, Rel)|_]) :-
 member_and_inrange(Rel, [_|PRels]) :-
 	member_and_inrange(Rel, PRels), !.
 
+%% add_abstract_concept is used to update abstract concepts for
+%% relations. e.g. so that we can add claws under limbs.
+
+add_abstract_concept(Concept) :-
+	(descends_from(_, Concept);
+	 descends_from(Concept, _)),
+	!,
+	writer(['Impossible to add ', Concept, ', it is already known.']).
+
+add_abstract_concept(Concept) :-
+	assert(descends_from(Concept, entity)),
+	writer([Concept, ' added as a root abstract concept.']), !.
+
+add_abstract_concept(Concept, _) :-
+	(descends_from(_, Concept);
+	 descends_from(Concept, _)),
+	!,
+	writer(['Impossible to add ', Concept, ', it is already known.']).
+
+add_abstract_concept(Concept, Parent) :-
+	\+(descends_from(_, Parent);
+	   descends_from(Parent, _)),
+	!,
+	writer(['Impossible to add ', Concept, ', parent is unknown.']).
+
+add_abstract_concept(Concept, Parent) :-
+	assert(descends_from(Concept, Parent)),
+	writer([Concept, ' added.']), !.
+
+%% Update_relations checks if there are no restrictions and then updates
+%% the relations if not.
+update_relations(Concept, Rels) :-
+	descends_from(Concept, entity),
+	!,
+	add_relations(Concept, Rels), !.
+
+
+update_relations(Concept, Rels) :-
+	descends_from(Concept, Parent),
+	all_relations(Parent, PRels),
+	check_restrictions(Rels, PRels),
+	add_relations(Concept, Rels), !.
+
 % Helper for add, adds all relations to knowledge base
 add_relations(_, []).
 
@@ -179,3 +222,82 @@ writer([]) :-
 writer([H|T]) :-
 	write(H),
 	writer(T).
+
+%% Demonstration functions
+
+go1 :-
+	write('Show a concept with its restrictions, filtered and unfiltered:'), nl,
+	show(human), nl,
+	show_filtered(human), nl,
+	write('use show/1 and show_filtered/1 for this information.').
+
+go2 :-
+	write('Now let\'s try to add a new concept below a human, the \'Teaching Assistant\':'), nl,
+	write('?- show_filtered(teaching_assistant)'), nl,
+	\+show(teaching_assistant), nl,
+	write('?- add(teaching_assistant, humn, [(1/1, walking), (2/2, leg), (3/3, arm), (0/0, birth)]).'), nl,
+	add(teaching_assistant, humn, [(1/1, walking), (2/2, leg), (3/3, arm), (0/0, birth)]), nl,
+	write('?- add(teaching_assistant, human, [(1/1, walking), (2/2, leg), (3/3, arm), (0/0, birth)]).'), nl,
+	add(teaching_assistant, human, [(1/1, walking), (2/2, leg), (3/3, arm), (0/0, birth)]), nl,
+	write('?- add(teaching_assistant, human, [(1/1, walking), (2/2, leg), (2/2, arm), (0/0, birth)]).'), nl,
+	add(teaching_assistant, human, [(1/1, walking), (2/2, leg), (2/2, arm), (0/0, birth)]), nl,
+	write('?- show_filtered(teaching_assistant)'), nl,
+	show_unfiltered(teaching_assistant), nl,
+	write('Adding new concepts checks for restrictions, if parent concepts '), nl,
+	write('are known and if the concept to be added is not known yet.').
+
+go3 :-
+	write('Our knowledge system is also able to give classifications based on restrictions given'), nl,
+	write('So give us all concepts in the system with 2 legs and wings and lay 5 to 10 eggs.'), nl,
+	write('?- classify([(2/2, leg), (2/2, wing), (5/10, egg)], X).'), nl,
+	classify([(2/2, leg), (2/2, wing), (5/10, egg)], X), write(X), nl, nl,
+	write('And now suppose we have encountered a new species, but don\'t know it\'s inheritance.'), nl,
+	write('try to add it based on the above restrictions:'), nl,
+	write('?- add(pfundstein_meijers_bird, [(2/2, leg), (2/2, wing), (5/10, egg)]).'), nl,
+	add(pfundstein_meijers_bird, [(2/2, leg), (2/2, wing), (5/10, egg)]), nl,
+	write('So say we have observed it some more and have noticed that our new bird swims'), nl,
+	write('?- add(pfundstein_meijers_bird, [(2/2, leg), (2/2, wing), (5/10, egg), (1/1, swimming)]).'), nl,
+	add(pfundstein_meijers_bird, [(2/2, leg), (2/2, wing), (5/10, egg), (1/1, swimming)]), nl,
+	show(pfundstein_meijers_bird), nl,
+	write('So the system is able to classify new species and add them when there is no ambiguity.'), nl,
+	write('Of course, one can also use classify/2 to get options and then use add/3 to add it.').
+
+go4 :-
+	write('The possibility to update restrictions is also there, which even \nchecks if there is no'),
+	write(' parent concept restricting the change:'), nl,
+	write('?- show(eagle).'), nl,
+	show(eagle), nl,
+	write('?- update_relations(eagle, [(3/3, wing)]).'), nl,
+	\+update_relations(eagle, [(3/3, wing)]),
+	write('Doesn\'t work, since all birds have two wings, so let\'s try:'), nl,
+	write('?- update_relations(bird, [(3/3, wing)]).'), nl,
+	update_relations(bird, [(3/3, wing)]), nl,
+	write('?- show(eagle)'), nl,
+	show(eagle),
+	write('And because of inheritance, eagle now shows that it has three wings,'),
+	write('since it\'s ancestor is a bird.').
+
+go5 :-
+	write('As a last demonstration we can add a whole new concept, with it\'s only'), nl,
+	write('super concept being \'entity\':'), nl,
+	write('add(plant, []).'), nl,
+	add(plant, []), nl,
+	write('Let\'s add some restrictions to new abstract concepts:'), nl,
+	write('?- add_abstract_concept(diet_type), add_abstract_concept(photosynthesis, diet_type),\n   add_abstract_concept(reproduction, pollen).'), nl,	
+	add_abstract_concept(diet_type), add_abstract_concept(photosynthesis, diet_type), add_abstract_concept(pollen, reproduction), nl,
+	write('?- update_relations(plant, [(0/0, movement_type), (0/inf, pollen), (1/inf, diet_type), (1/1, photosynthesis)]).'), nl,
+	update_relations(plant, [(0/0, movement_type), (0/inf, pollen), (1/inf, diet_type), (1/1, photosynthesis)]),
+	write('?- show(plant).'), nl,
+	show(plant), nl,
+	write('So we can add new concepts everywhere in the tree, update relations and define new abstract '), nl,
+	write('with the sytem checking for inconsistencies and other human errors. Last try:'), nl,
+	write('?- add(walking_plant, plant, [(1/1, walking)]).'), nl,
+	add(walking_plant, plant, [(1/1, walking)]), nl,
+	write('?- add_abstract_concept(carnivore, diet_type).'), nl,
+	add_abstract_concept(carnivore, diet_type), nl,
+	write('?- add(flesh_eating_plant, plant, [(1/1, carnivore)]).'), nl,
+	add(flesh_eating_plant, plant, [(1/1, carnivore)]), nl,
+	write('?- show(walking_plant).'), nl,
+	\+show(walking_plant), nl,
+	write('?- show(flesh_eating_plant).'), nl,
+	show(flesh_eating_plant).
