@@ -37,6 +37,7 @@ print_concept([H|T]) :-
 print_concept([X]) :-
 	writer([X, ' is not a known concept.']).
 
+
 print_relation([(Min/Max, Rel)]) :-
 	writer([Rel, ' (', Min/Max, ')']).
 
