@@ -1,0 +1,184 @@
+malaria:
+	carrier: mug
+	gebied: Indonesië, Azië, Latijns-Amerika, Afrika, onder 2000 m.s.l., landelijke gebieden
+	preventie: profylaxe
+
+	malaria_tropico:
+		oorzaak: parasiet (Plasmodium Falciparum)
+		notitie: dodelijk zonder behandeling
+
+	malaria_tertiana:
+		oorzaak: parasiet (Plasmodium Vivax, Plasmodiom  Ovale)
+		notitie: lange incubatietijd (1+ jaar)
+
+	malaria_quartana:
+		oorzaak: parasiet (Plasmodium Malariae)
+
+wormen:
+	aarsmaden:
+		oorzaak: kleding, beddengoed, klasgenoten die besmet zijn met eieren
+		levensruimte: dikke darm
+		notitie: vaak in kleine kinderen, vaak hele gezinnen en klassen
+		preventie: goede hygiëne
+	
+	spoelwormen:
+		oorzaak: fecaal besmet voedsel (rauwe groenten) besmet met in natuur gerijpte eieren van andere spoelwormen
+		levensruimte: dunne darm
+		notitie: kruipt soms spontaan uit de anus, sterven meestal naar 1 a 2 jaar
+		preventie: groenten goed koken
+
+	zweepwormen:
+		oorzaak: zie spoelwormen
+		levensruimte: dikke darm
+		notitie: raak je naar enkele jaren vanzelf kwijt
+		preventie: zie spoelwormen
+
+	mijnwormen:
+		oorzaak: larven via de huid
+		levensruimte: dunne darm
+		notitie: verdwijnt vanzelf zonder her-infectie van buitenaf
+		preventie: niet blootsvoets lopen
+		
+
+	strongyloides_stercoralis:
+		oorzaak: zie mijnworm
+		notitie: kunnen zich in de mens, blijven levenslang
+		
+	lintwormen:
+		taenia_saginata:
+			oorzaak: rundvlees
+			levensruimte: darmen
+			notitie: wordt 10 meter lang, soms vind je deeltjes van hem in de ontlasting
+
+		taenia_solium:
+		    oorzaak: varkensvlees
+			levensruimte: allerlei lichaamsdelen
+		    notitie: wordt 3 meter lang
+
+		hymenolepis_nana:
+			oorzaak: muis, vlo, eten van besmet voedsel
+			levensruimte: darmen
+			notitie: veroorzaakt bijna geen klachten
+
+		echinococcus_granulosus:
+			oorzaak: hond, schaap besmet met eieren
+			levensruimte: lever
+			notitie: komt normaal niet in de mens voor
+
+	filariawormen:
+		gebied: tropen
+
+		wuchereria_bancrofti:
+			gebied: alle tropen, sommige delen van de subtropen
+			oorzaak: mug
+			levensruimte: lymfeklieren, lymfevaten
+			notitie: larven zwermen uit in het bloed na zonsondergang
+		
+		onchocerca_volvulus:
+			gebied: tropisch Afrika, Latijns-Amerika, west-Afrika, Kameroen
+			oorzaak: mug
+			levensruimte: onderhuids weefsel
+		
+		loiasis:
+			gebied: west- en centraal Afrika
+			notitie: heet ook loa loa, ongevaarlijk
+			levensruimte: onderhuids, oog
+
+	bilharziawormen:
+		gebied: tropen
+		oorzaak: ingeslikte larven tijdens zwemmen		
+		
+		schistosoma_mansoni: 
+			    gebied: Afrika, Latijns-Amerika
+			    levensruimte: dikke darm
+
+		schisostoma haematobium:
+			    gebied: Afrika, Midden-Oosten
+			    levensruimte: blaas
+			    
+darminfecties:
+    oorzaak: vaak faecaal besmet voedsel/water
+    preventie: water filteren, water uit gesloten flesjes, groenten schillen/koken
+
+    diarree:
+        oorzaak: bacteriele infectie in de darmen, besmet voedsel/water
+        notitie: komt vaak voor eerste paar dagen op reis, "reizigersdiarree"
+        
+    giardiasis:
+        oorzaak: eencellige darmparasiet, "giardia lamblia"
+        notitie: kan ook geen klachten veroorzaken, gaat dan vanzelf weg.
+        
+    baciallaire dysenterie:
+        oorzaak: shiggella bacterie
+        notitie: duurt gemiddeld twee weken, beter wel behandelen
+        
+    amoebendysenterie:
+        oorzaak: eencellige darmparasiet, "entamoeba histolytica"
+        notitie: kan maandelang duren, snel behandeld
+    
+    salmonellosen:
+        tyfus:
+            oorzaak: bacterie, "salmonella typhi"
+            notitie: kan bij geen behandeling lijden tot dood door buikvliesontsteking
+        
+        paratyfus:
+            oorzaak: bacterie, "salmonella paratyphi A/B/C"
+            notitie: vaccinatie veel bijwerkingen
+            
+        andere salmonellosen:
+            oorzaak: bacterie, familie van "salmonella (para)typhi"
+            notitie: vaak kortstondige voedselvergiftiging
+            
+    cholera:
+        oorzaak: bacterie, "vibrio cholerae" en "vibrio el tor"
+        notitie: door uitdroging kan binnen enkele uren de dood optreden
+        
+    geelzucht:
+        oorzaak: virus, "hepatitis A"
+        notitie: geen geneesmiddelen, heelt meestal vanzelf.
+        
+    polio:
+        oorzaak: virus, "polio", drie soorten
+        notitie: gevaarlijk voor iedereen, inenting belangrijk.
+        
+huidziekten:
+    oorzaak: beschadigde huid door zon, wondjes makkelijk te infecteren
+    preventie: goede huidhygiëne, regelmatig met zeep wassen
+    
+    prickly heat:
+        oorzaak: huid bedekken in vochtig tropisch klimaat
+        preventie: luchtige kleding, talkpoeder
+        
+    schimmels:
+        oorzaak: vochtige, warme plekken tussen huidplooien
+        preventie: drooghouden
+        
+    lepra:
+        oorzaak: contact met besmette patiënt
+        preventie: vermijd intensief contact met patiënten
+        
+    framboesia:
+        oorzaak: besmet door dragers
+        notitie: komt bijna nooit voor bij Europeanen
+    
+    huid-leishmaniasis:
+        oorzaak: muggensteek, "phlebotomus" (zandmug)
+        gebied: Midden-Oosten, Middellandse Zee, Suriname
+        
+    myiasis:
+        oorzaak: onderhuidse vliegeneieren
+        gebied: Latijns-Amerika, Afrika
+        notitie: ongevaarlijke aandoening
+        
+    zandvlooien:
+        oorzaak: "tunga penetrans"
+        gebied: Afrika, Latijns-Amerika
+        preventie: niet blootsvoets lopen
+        
+    mijten:
+        oorzaak: onderhuidse mijteieren
+        preventie: gehele gezin behandelen
+        
+    luizen/vlooien:
+        oorzaak: meestal afkomstig van huisdieren
+        
