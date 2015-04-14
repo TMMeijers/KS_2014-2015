@@ -5,3 +5,6 @@
 %%
 %% Knowledge base for assignment 3.
 
+if hoofdpijn
+then ziekte.
+
