@@ -5,6 +5,18 @@
 %%
 %% Knowledge base for assignment 3.
 
+%%% Log known diseases
+
+disease(malaria).
+disease(malaria_tropica).
+disease(malaria_quartana).
+disease(giardasis).
+disease(bacillaire_dysenterie).
+disease(tyfus).
+disease(aarsmaden).
+
+%%% MALARIA
+
 if malaria_tropica then malaria.
 
 if malaria_tertiana then malaria.
@@ -19,9 +31,9 @@ if malaria_aanval and dagelijks_koorts then malaria_tropica.
 
 if malaria_aanval and regelmatig_koorts_48_uur then malaria_tertiana.
 
-if malaria_aanval and regelmatig_koorts_72_uur then malaria_qartana.
+if malaria_aanval and regelmatig_koorts_72_uur then malaria_quartana.
 
-%% Darmaandoeiningen
+%% DARMAANDOENINGEN
 
 if buikklachten or klachten_ontlasting then darm_aandoening.
 
@@ -29,11 +41,15 @@ if buikklachten or klachten_ontlasting then darm_aandoening.
 if darm_aandoening and diarree then giardasis.
 
 %% Bacillaire dysenterie
-if darm_aandoeining and hoge_koorts then bacillaire_dysenterie.
+if darm_aandoening and hoge_koorts then bacillaire_dysenterie.
 
 %% Tyfus
-if darm_aandoeining and hoge_koorts and hoofdpijn then tyfus
+if darm_aandoening and hoge_koorts and hoofdpijn then tyfus.
 
+%%% WORMEN
+
+%% Aarsmaden
+if jeukende_anus and wormen then aarsmaden.
 
 %% symptom tree
 if hoge_koorts then koorts.
@@ -62,4 +78,6 @@ if temperatur_hoger_38_5 then koorts.
 
 if temperatur_hoger_40 then hoge_koorts.
 
+if wormen_in_ontlasting then wormen.
 
+if eitjes_in_ontlasting then wormen.
