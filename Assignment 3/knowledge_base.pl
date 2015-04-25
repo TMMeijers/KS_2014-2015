@@ -52,8 +52,6 @@ if darm_aandoening and hoge_koorts and hoofdpijn then tyfus.
 if jeukende_anus and wormen then aarsmaden.
 
 %% symptom tree
-if hoge_koorts then koorts.
-
 if waterdunne_diarree then diarree.
 
 if diarree then klachten_ontlasting.
@@ -74,10 +72,16 @@ if hoofdpijn then klachten_algemeen.
 
 %% mapping abstract input to symptoms
 
-if temperatur_hoger_38_5 then koorts.
+if temperatuur_hoger_38_5 then lage_koorts.
 
-if temperatur_hoger_40 then hoge_koorts.
+if temperatuur_hoger_40 then hoge_koorts.
 
 if wormen_in_ontlasting then wormen.
 
 if eitjes_in_ontlasting then wormen.
+
+%% Ask user to specify
+
+if koorts ask temperatuur_hoger_38_5 or temperatuur_hoger_40.
+
+if rare_ontlasting ask diarree or waterdunne_diarree or bloedige_onstlasting or brijige_ontlasting.
