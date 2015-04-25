@@ -15,18 +15,18 @@ if malaria_quartana then malaria.
 
 if hoge_korts and transpireert and koude_rillingen then malaria_aanval.
 
-if malaria_aanval and dagelijks_korts then malaria_tropica.
+if malaria_aanval and dagelijks_koorts then malaria_tropica.
 
-if malaria_aanval and regelmatig_korts_48_uur then malaria_tertiana.
+if malaria_aanval and regelmatig_koorts_48_uur then malaria_tertiana.
 
-if malaria_aanval and regelmatig_korts_72_uur then malaria_qartana.
+if malaria_aanval and regelmatig_koorts_72_uur then malaria_qartana.
 
 %% symptom tree
-if hoge_korts then korts.
+if hoge_koorts then koorts.
 
 %% mapping abstract input to symptoms
 
-if temperatur_hoger_38_5 then korts.
+if temperatur_hoger_38_5 then koorts.
 
-if temperatur_hoger_40 then hoge_korts.
+if temperatur_hoger_40 then hoge_koorts.
 
