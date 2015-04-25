@@ -40,7 +40,7 @@ if hoge_koorts then koorts.
 
 if waterdunne_diarree then diarree.
 
-if diarree then klachten_ontlasting. % Are we going up one level more? Maybe useful for early elimination?
+if diarree then klachten_ontlasting.
 
 if brijige_ontlasting then klachten_ontlasting.
 
