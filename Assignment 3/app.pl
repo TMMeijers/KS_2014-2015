@@ -26,9 +26,10 @@
 %%
 %% -> to diagnos malaria tropica enter:
 %% ja.
-%% [koorts, koude_rillingen, transpireert].
+%% [koorts].
 %% temperatuur_hoger_40.
 %% [dagelijks_koorts].
+%% [koude_rillingen, transpireert].
 go :-
 	retractall(fact(_)),
 	write('Welkom bij uw Digitale Tropenarts Beta.'), nl,

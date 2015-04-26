@@ -25,6 +25,18 @@ maybe_disease(X, Y) :-
 
 maybe_disease(X, Y) :-
 	if _ and _ and X then Y.
+
+maybe_disease(X, Y) :-
+	if X and _ and _ and _ then Y.
+
+maybe_disease(X, Y) :-
+	if _ and X and _ and _ then Y.
+
+maybe_disease(X, Y) :-
+	if _ and _ and _ and X then Y.
+
+maybe_disease(X, Y) :-
+	if _ and _ and X and _ then Y.
  
 is_true( P ):-
     fact( P ).

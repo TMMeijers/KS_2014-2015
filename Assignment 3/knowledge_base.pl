@@ -26,13 +26,11 @@ if malaria_quartana then malaria.
 
 % mapping symptoms to disease
 
-if hoge_koorts and transpireert and koude_rillingen then malaria_aanval.
+if hoge_koorts and transpireert and koude_rillingen and dagelijks_koorts then malaria_tropica.
 
-if malaria_aanval and dagelijks_koorts then malaria_tropica.
+if hoge_koorts and transpireert and koude_rillingen and regelmatig_koorts_48_uur then malaria_tertiana.
 
-if malaria_aanval and regelmatig_koorts_48_uur then malaria_tertiana.
-
-if malaria_aanval and regelmatig_koorts_72_uur then malaria_quartana.
+if hoge_koorts and transpireert and koude_rillingen and malaria_aanval and regelmatig_koorts_72_uur then malaria_quartana.
 
 %% DARMAANDOENINGEN
 
