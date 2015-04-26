@@ -30,6 +30,63 @@
 %% temperatuur_hoger_40.
 %% [dagelijks_koorts].
 %% [koude_rillingen, transpireert].
+
+%% A FULL SAMPLE RUN:
+
+% go.
+% Welkom bij uw Digitale Tropenarts Beta.
+% Heeft u recentelijk een reis ondernomen naar de tropen? (ja/nee)
+% ja.
+
+% De volgende symptomen zijn bekend in onze database:
+%   bloedige_onstlasting        bloedige_ontlasting
+%   brijige_ontlasting          buikklachten
+%   buikpijn                    dagelijks_koorts
+%   darm_aandoening             diarree
+%   eitjes_in_ontlasting        heftige_kramp
+%   hoge_koorts                 hoofdpijn
+%   jeukende_anus               klachten_algemeen
+%   klachten_ontlasting         koorts
+%   koude_rillingen             lage_koorts
+%   malaria_aanval              misseljk
+%   obstipatie                  rare_ontlasting
+%   regelmatig_koorts_48_uur    regelmatig_koorts_72_uur
+%   temperatuur_hoger_38_5      temperatuur_hoger_40
+%   transpireert                waterdunne_diarree
+%   wormen                      wormen_in_ontlasting
+
+% Geeft u alstublieft de symptomen in lijstvorm, wees zo specifiek mogelijk. ([a, b])
+% [koorts, diarree].
+
+% Specificeert u alstublieft de gradatie van het symptoom 'koorts',
+% Typ een van de symptomen over die het beste overeenkomen met uw klachten:
+% temperatuur_hoger_38_5 or temperatuur_hoger_40
+% temperatuur_hoger_40.
+
+
+% Start symptoomanalyse:
+% klachten_ontlasting toegevoegd aan het symptoomdomein.
+% darm_aandoening toegevoegd aan het symptoomdomein.
+% hoge_koorts toegevoegd aan het symptoomdomein.
+
+% Start ziekteanalyse:
+% aarsmaden uitgesloten, geen enkel symptoom aanwezig.
+% bacillaire_dysenterie toegevoegd aan mogelijke ziektes, een of meerdere symptomen aanwezig.
+% giardasis toegevoegd aan mogelijke ziektes, een of meerdere symptomen aanwezig.
+% malaria uitgesloten, geen enkel symptoom aanwezig.
+% malaria_quartana uitgesloten, geen enkel symptoom aanwezig.
+% malaria_tertiana uitgesloten, geen enkel symptoom aanwezig.
+% malaria_tropica uitgesloten, geen enkel symptoom aanwezig.
+% tyfus uitgesloten, geen enkel symptoom aanwezig.
+
+% U kunt een of meerdere van de volgende ziektes hebben:
+%   bacillaire_dysenterie       giardasis
+
+% Raadpleegt u alstublieft een arts en neem deze analyse mee.
+
+% Bedankt voor het gebruiken van Digitale Tropenarts Beta.
+% Tot ziens
+
 go :-
 	retractall(fact(_)),
 	write('Welkom bij uw Digitale Tropenarts Beta.'), nl,
