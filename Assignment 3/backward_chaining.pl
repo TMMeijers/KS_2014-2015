@@ -5,6 +5,27 @@
 %%
 %% Backward chaining rules for assignment 3.
 
+maybe(X, Y) :-
+	maybe_disease(X, Y), disease(Y).
+
+maybe_disease(X, Y) :-
+	if X then Y.
+
+maybe_disease(X, Y) :-
+	if X and _ then Y.
+
+maybe_disease(X, Y) :-
+	if _ and X then Y.
+
+maybe_disease(X, Y) :-
+	if X and _ and _ then Y.
+
+maybe_disease(X, Y) :-
+	if _ and X and _ then Y.
+
+maybe_disease(X, Y) :-
+	if _ and _ and X then Y.
+ 
 is_true( P ):-
     fact( P ).
 

@@ -17,17 +17,25 @@
 
 
 %% Welcome message, start diagnosis
-start :-
+%% For some test runs you can do. 
+%%
+%% -> to diagnos some simple disease enter:
+%% ja.
+%% [buikpijn].
+%% [diarree].
+%%
+%% -> to diagnos malaria tropica enter:
+%% ja.
+%% [koorts, koude_rillingen, transpireert].
+%% temperatuur_hoger_40.
+%% [dagelijks_koorts].
+go :-
 	retractall(fact(_)),
 	write('Welkom bij uw Digitale Tropenarts Beta.'), nl,
 	write('Heeft u recentelijk een reis ondernomen naar de tropen? (ja/nee)'), nl,
 	read(Travel), nl,
 	get_symptoms(Travel).
 
-go :-
-	write('This shows that we can correctly deduce malaria tertiana from given symptoms. please enter temperatuur_hoger_40 when the systems asks you'), nl,
-	retractall(fact(_)),
-	forward_chaining([koorts, transpireert, regelmatig_koorts_48_uur, koude_rillingen]).
 
 /*
  * Application rules
@@ -131,6 +139,36 @@ filter_symptoms(Diseases, [X|Rest], [X|Symptoms]) :-
 	atom(X), !,
 	filter_symptoms(Diseases, Rest, Symptoms).
 
+get_possible_diseases(Y) :-
+	setof(D, get_possible_diseases_helper(D), Y).
+
+get_possible_diseases_helper(Y) :-
+	fact(X),
+	maybe(X, Y).
+
+get_symptom(Disease, S) :-
+	maybe(X, Disease), split_conjunction(X, Y),  member(S, Y).
+
+get_symptoms_for_disease(Disease, Symptoms) :-
+	setof(X, get_symptom(Disease, X), Symptoms).
+
+get_symptoms_for_disease_list([D], S) :-
+	get_symptoms_for_disease(D, S).
+
+get_symptoms_for_disease_list([D|Rest], Symps) :-
+	get_symptoms_for_disease(D, Ss),
+	get_symptoms_for_disease_list(Rest, Others),
+	append(Others, Ss, Symps).
+
+split_conjunction(X, [X]) :- atom(X), !.
+
+split_conjunction(X and Rest, [X|RestSplit]) :-
+	split_conjunction(Rest, RestSplit).
+
+set([],[]).
+set([H|T],[H|T1]) :- subtract(T,[H],T2), set(T2,T1).
+
+
 %% backward_chaining/0 narrows down on diseases based on the symptoms, top-down approach
 backward_chaining :-
 	setof(D, disease(D), Possibilities),
@@ -143,12 +181,19 @@ backward_chaining :-
 	close_program.
 
 backward_chaining :-
-	nl, write('Geen ziektes gevonden aan de hand van uw symptomen, wellicht heeft u'), nl,
-	write('geen tropenziekte. Raadpleegt u bij twijfel een arts, mocht u het pro-'), nl,
-	write('gramma nogmaals willen draaien geeft u dan meer of specifieker uw'), nl,
-	write('symptomen in.'), nl, nl,
-	close_program.
-
+	nl, write('Meer informatie nodig'),
+	get_possible_diseases(Possible),
+	nl, write('U kunt een of meerdere van deze hebben:'), nl,
+	output_list(Possible), nl,
+	write('Welke symptome heb je nog? '), nl,
+	get_symptoms_for_disease_list(Possible, S),
+	set(S, SS),
+	exclude(fact, SS, SSClean),
+	output_list(SSClean),
+	write('Geeft u alstublieft de symptomen in lijstvorm, wees zo specifiek mogelijk. ([a, b])'), nl,
+	read(Symptoms), nl,
+	forward_chaining(Symptoms).
+	
 %% narrow_down/2 uses backward_chaining to check if the disease is in the narrowed down solution space
 narrow_down([], []).
 
