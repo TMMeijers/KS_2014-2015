@@ -15,6 +15,20 @@
 :- consult('backward_chaining.pl').
 :- consult('knowledge_base.pl').
 
+
+%% Welcome message, start diagnosis
+start :-
+	retractall(fact(_)),
+	write('Welkom bij uw Digitale Tropenarts Beta.'), nl,
+	write('Heeft u recentelijk een reis ondernomen naar de tropen? (ja/nee)'), nl,
+	read(Travel), nl,
+	get_symptoms(Travel).
+
+go :-
+	write('This shows that we can correctly deduce malaria tertiana from given symptoms. please enter temperatuur_hoger_40 when the systems asks you'), nl,
+	retractall(fact(_)),
+	forward_chaining([koorts, transpireert, regelmatig_koorts_48_uur, koude_rillingen]).
+
 /*
  * Application rules
 */
@@ -29,13 +43,6 @@ check_aarsmaden(nee) :-
 	write('herkent enkel tropische ziektes en aarsmaden, veel succes.'), nl, nl,
 	close_program.
 
-%% Welcome message, start diagnosis
-start :-
-	retractall(fact(_)),
-	write('Welkom bij uw Digitale Tropenarts Beta.'), nl,
-	write('Heeft u recentelijk een reis ondernomen naar de tropen? (ja/nee)'), nl,
-	read(Travel), nl,
-	get_symptoms(Travel).
 
 %% get_symptoms/1 asks the user for the initial list of symptoms.
 get_symptoms(ja) :-
@@ -48,6 +55,7 @@ get_symptoms(nee) :-
 	write('Heeft u jeuk aan uw anus? (ja/nee)'), nl,
 	read(Jeuk), nl,
 	check_aarsmaden(Jeuk).
+
 
 %% forward_chaining/1 gets a list of all symptoms based on forward_chaining and current facts, bottom-up approach
 forward_chaining([]) :-
@@ -157,4 +165,5 @@ close_program :-
 	!, 
 	write('Bedankt voor het gebruiken van Digitale Tropenarts Beta.'), nl,
 	write('Tot ziens!').
-	
+
+

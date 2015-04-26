@@ -10,6 +10,7 @@
 disease(malaria).
 disease(malaria_tropica).
 disease(malaria_quartana).
+disease(malaria_tertiana).
 disease(giardasis).
 disease(bacillaire_dysenterie).
 disease(tyfus).
@@ -25,7 +26,7 @@ if malaria_quartana then malaria.
 
 % mapping symptoms to disease
 
-if hoge_korts and transpireert and koude_rillingen then malaria_aanval.
+if hoge_koorts and transpireert and koude_rillingen then malaria_aanval.
 
 if malaria_aanval and dagelijks_koorts then malaria_tropica.
 
