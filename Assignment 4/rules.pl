@@ -9,10 +9,27 @@
 add_before(X, Y) :-
 	check_if_event(X),
 	check_if_event(Y),
-	\+Y before X,
-	\+Y while X,
-	\+Y meets X.
+	assert(X before Y).
+
+add_after(X, Y) :-
+	check_if_event(X),
+	check_if_event(Y),
+	assert(X after Y).
+
+add_concurrent(X, Y) :-
+	check_if_event(X),
+	check_if_event(Y),
+	assert(X concurrent Y).
+
+doSmartStuff:-
+	X before Y, 
+	Y before Z,
+	assert(X before Z).
+
 
 check_if_event(Event) :-
-	\+event(Event),
+	\+event(Event), !,
 	assert(event(Event)).
+
+check_if_event(Event) :-
+	event(Event).
