@@ -13,6 +13,21 @@ add_before(X, Y) :-
 	\+Y while X,
 	\+Y meets X.
 
+add(X before Y) :-
+	Y before X,
+	format('CONTRADICTION: ~p comes before ~p!', [Y, X]).
+
+add(X before Y) :-
+	check_if_event(X),
+	check_if_event(Y),
+	assert(X before Y).
+	
+add(X after Y) :-
+	true.
+
 check_if_event(Event) :-
-	\+event(Event),
+	\+event(Event), !,
 	assert(event(Event)).
+
+check_if_event(Event) :-
+	event(Event).
