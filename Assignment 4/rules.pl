@@ -36,6 +36,7 @@ add(X before Y) :-
 	
 add(X concurrent Y):-
 	\+check_inconsistent(X concurrent Y),
+	add_transitive(X concurrent Y),
 	assert(X concurrent Y).
 
 
@@ -57,11 +58,14 @@ add_transitive(X before Y) :-
 	event(X),
 	\+event(Y),
 	assert(event(Y)),
+	write(step1),
 	findall(A, X concurrent A, List_A),
 	findall(B, B concurrent X, List_B),
 	findall(C, C before X, List_C),
+	write(step2),
 	append(List_A, List_B, Temp),
 	append(List_C, Temp, Result_list),
+	write(step3),
 	add_trans_list(Result_list before Y).
 
 add_transitive(X before Y) :-
@@ -74,6 +78,25 @@ add_transitive(X before Y) :-
 	append(List_A, List_B, Temp),
 	append(List_C, Temp, Result_list),
 	add_trans_list(X before Result_list).
+
+%% CONCURRENT OPERATOR
+add_transitive(X concurrent Y) :-
+	event(X),
+	\+event(Y), !,
+	assert(event(Y)),
+	findall(A, X concurrent A, List_A),
+	findall(B, B concurrent X, List_B),
+	append(List_A, List_B, Conc_list),
+	add_trans_list(Conc_list concurrent Y),
+	findall(C, C before X, List_C),
+	add_trans_list(List_C before Y),
+	findall(D, X before D, List_D),
+	add_trans_list(Y before List_D).
+
+add_transitive(X concurrent Y) :-
+	event(Y),
+	\+event(X),
+	add_transitive(Y concurrent X).	
 
 %%%%%
 %% add_trans_list/1 adds a whole list in the timeline before a certain event.
@@ -93,3 +116,10 @@ add_trans_list(X before [Y|Rest]) :-
 	assert(X before Y),
 	add_trans_list(X before Rest).
 		
+%% CONCURRENT OPERATOR
+add_trans_list([] concurrent Y) :-
+	\+is_list(Y), !.
+
+add_trans_list([X|Rest] concurrent Y) :-
+	assert(X concurrent Y),
+	add_trans_list(Rest concurrent Y).

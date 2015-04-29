@@ -8,8 +8,5 @@
 
 event(a).
 event(b).
-event(c).
 
 a before b.
-
-c concurrent b.
