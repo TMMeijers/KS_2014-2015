@@ -16,8 +16,12 @@ check_consistent(X before Y) :-
 	X after Y,
 	format('CONTRADICTION: ~p comes before ~p!', [Y, X]).
 
+add(X after Y) :-
+	add(Y before X).
+
 add(X before Y) :-
 	check_consistent(X before Y),
+	add_transitive(X before Y),
 	check_if_event(X),
 	check_if_event(Y),
 	assert(X before Y).

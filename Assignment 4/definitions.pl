@@ -7,12 +7,10 @@
 %% These are the definitions for the timelines assignment.
 
 :- op(300, xfy, before).
-:- op(299, xfy, after).
 :- op(298, xfy, concurrent).
 :- op(200, xfy, or).
 
 :- dynamic(before/2).
-:- dynamic(after/2).
 :- dynamic(concurrent/2).
 :- dynamic(or/2).
 :- dynamic(event/1).
