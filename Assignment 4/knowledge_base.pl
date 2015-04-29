@@ -5,3 +5,7 @@
 %% May 3rd, 2015
 %%
 %% This is the knowledge base for timeline reasoning.
+
+a before b.
+c while b.
+c meets d.

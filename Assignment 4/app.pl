@@ -5,3 +5,10 @@
 %% May 3rd, 2015
 %%
 %% This application can reason about timelines.
+
+:- consult('definitions.pl').
+:- consult('knowledge_base.pl').
+:- consult('rules.pl').
+
+go1 :-
+	true. % assert KB
