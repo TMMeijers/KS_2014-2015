@@ -15,12 +15,8 @@ check_inconsistent(X before Y) :-
 	format('CONTRADICTION: ~p and ~p are concurrent!', [Y, X]).
 
 check_inconsistent(X before Y) :-
-	Y before X;
-	X after Y,
+	Y before X,
 	format('CONTRADICTION: ~p comes before ~p!', [Y, X]).
-
-%%%%%
-%% add/1 adds events to the timeline if not inconsistent, transitively updates all relations
 
 check_inconsistent(X concurrent Y) :-
 	Y before X,
@@ -28,10 +24,10 @@ check_inconsistent(X concurrent Y) :-
 
 check_inconsistent(X concurrent Y) :-
 	X before Y,
-	format('CONTRADICTION: ~p comes before ~p !', [X, Y]).
+	format('CONTRADICTION: ~p comes before ~p !', [X, Y]).	
 
-add(X after Y) :-
-	add(Y before X).
+%%%%%
+%% add/1 adds events to the timeline if not inconsistent, transitively updates all relations
 
 add(X before Y) :-
 	\+check_inconsistent(X before Y),
@@ -39,9 +35,8 @@ add(X before Y) :-
 	assert(X before Y).
 	
 add(X concurrent Y):-
-	\+ check_inconsistent(X concurrent Y),
-	assert(X concurrent Y),
-	assert(Y concurrent X).
+	\+check_inconsistent(X concurrent Y),
+	assert(X concurrent Y).
 
 
 %%%%%
