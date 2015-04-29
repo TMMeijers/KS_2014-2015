@@ -7,5 +7,7 @@
 %% This is the knowledge base for timeline reasoning.
 
 a before b.
-c while b.
-c meets d.
+
+c concurrent b.
+
+c after d.

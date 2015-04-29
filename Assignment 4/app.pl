@@ -11,4 +11,7 @@
 :- consult('rules.pl').
 
 go1 :-
-	true. % assert KB
+	true.
+	%% assert(a before b),
+	%% assert(c while b),
+	%% assert(c meets d). % assert KB

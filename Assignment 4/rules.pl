@@ -6,24 +6,27 @@
 %%
 %% These are the rules for assignment 4, timeline reasoning.
 
-add_before(X, Y) :-
-	check_if_event(X),
-	check_if_event(Y),
-	\+Y before X,
-	\+Y while X,
-	\+Y meets X.
+check_consistent(X before Y) :-
+	Y concurrent X;
+	X concurrent Y,
+	format('CONTRADICTION: ~p and ~p are concurrent!', [Y, X]).
 
-add(X before Y) :-
-	Y before X,
+check_consistent(X before Y) :-
+	Y before X;
+	X after Y,
 	format('CONTRADICTION: ~p comes before ~p!', [Y, X]).
 
 add(X before Y) :-
+	check_consistent(X before Y),
 	check_if_event(X),
 	check_if_event(Y),
 	assert(X before Y).
 	
 add(X after Y) :-
-	true.
+	check_consistent(X after Y),
+	check_if_event(X),
+	check_if_event(Y),
+	assert(X before Y).
 
 check_if_event(Event) :-
 	\+event(Event), !,
