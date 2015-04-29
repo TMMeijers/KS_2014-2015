@@ -9,12 +9,12 @@
 %%%%%
 %% check_inconsistent/1 checks if the fact to be added is inconsistent. 
 
-check_consistent(X before Y) :-
+check_inconsistent(X before Y) :-
 	Y concurrent X;
 	X concurrent Y,
 	format('CONTRADICTION: ~p and ~p are concurrent!', [Y, X]).
 
-check_consistent(X before Y) :-
+check_inconsistent(X before Y) :-
 	Y before X;
 	X after Y,
 	format('CONTRADICTION: ~p comes before ~p!', [Y, X]).
@@ -22,16 +22,27 @@ check_consistent(X before Y) :-
 %%%%%
 %% add/1 adds events to the timeline if not inconsistent, transitively updates all relations
 
+check_inconsistent(X concurrent Y) :-
+	Y before X,
+	format('CONTRADICTION: ~p comes before ~p !', [Y, X]).
+
+check_inconsistent(X concurrent Y) :-
+	X before Y,
+	format('CONTRADICTION: ~p comes before ~p !', [X, Y]).
+
+add(X after Y) :-
+	add(Y before X).
+
 add(X before Y) :-
-	check_consistent(X before Y),
+	\+check_inconsistent(X before Y),
 	add_transitive(X before Y),
 	assert(X before Y).
 	
-add(X after Y) :-
-	check_consistent(X after Y),
-	check_if_event(X),
-	check_if_event(Y),
-	assert(X before Y).
+add(X concurrent Y):-
+	\+ check_inconsistent(X concurrent Y),
+	assert(X concurrent Y),
+	assert(Y concurrent X).
+
 
 %%%%%
 %% check_if_event/1 checks if something is an event, if not it will be asserted
