@@ -6,8 +6,10 @@
 %%
 %% This is the knowledge base for timeline reasoning.
 
+event(a).
+event(b).
+event(c).
+
 a before b.
 
 c concurrent b.
-
-c after d.

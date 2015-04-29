@@ -15,8 +15,7 @@ check_inconsistent(X before Y) :-
 	format('CONTRADICTION: ~p and ~p are concurrent!', [Y, X]).
 
 check_inconsistent(X before Y) :-
-	Y before X;
-	X after Y,
+	Y before X,
 	format('CONTRADICTION: ~p comes before ~p!', [Y, X]).
 
 %%%%%
@@ -30,16 +29,13 @@ check_inconsistent(X concurrent Y) :-
 	X before Y,
 	format('CONTRADICTION: ~p comes before ~p !', [X, Y]).
 
-add(X after Y) :-
-	add(Y before X).
-
 add(X before Y) :-
 	\+check_inconsistent(X before Y),
 	add_transitive(X before Y),
 	assert(X before Y).
 	
 add(X concurrent Y):-
-	\+ check_inconsistent(X concurrent Y),
+	\+check_inconsistent(X concurrent Y),
 	assert(X concurrent Y),
 	assert(Y concurrent X).
 
@@ -62,9 +58,9 @@ add_transitive(X before Y) :-
 	event(X),
 	\+event(Y),
 	assert(event(Y)),
-	setof(A, X concurrent A, List_A),
-	setof(B, B concurrent X, List_B),
-	setof(C, C before X, List_C),
+	findall(A, X concurrent A, List_A),
+	findall(B, B concurrent X, List_B),
+	findall(C, C before X, List_C),
 	append(List_A, List_B, Temp),
 	append(List_C, Temp, Result_list),
 	add_trans_list(Result_list before Y).
@@ -73,9 +69,9 @@ add_transitive(X before Y) :-
 	event(Y),
 	\+event(X),
 	assert(event(X)),
-	setof(A, Y concurrent A, List_A),
-	setof(B, B concurrent Y, List_B),
-	setof(C, Y before C, List_C),
+	findall(A, Y concurrent A, List_A),
+	findall(B, B concurrent Y, List_B),
+	findall(C, Y before C, List_C),
 	append(List_A, List_B, Temp),
 	append(List_C, Temp, Result_list),
 	add_trans_list(X before Result_list).
