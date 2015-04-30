@@ -29,6 +29,7 @@ check_inconsistent(X concurrent Y) :-
 %%%%%
 %% add/1 adds events to the timeline if not inconsistent, transitively updates all relations
 
+%% BEFORE OPERATOR
 add(X before Y) :-
 	\+event(X),
 	\+event(Y),
@@ -50,11 +51,26 @@ add(X before Y) :-
 	\+check_inconsistent(X before Y), % TODO RECURSIVELY
 	add_transitive(X before Y),
 	assert(X before Y).
-	
+
+%% CONCURRENT OPERATOR
+add(X concurrent Y) :-
+	\+event(X),
+	\+event(Y),
+	event(_), !,
+	write('Cannot start seperate timeline while currently there is one in the knowledge base.'), nl.
+
+add(X concurrent Y) :-
+	\+event(X),
+	\+event(Y), !,
+	write('Started new timeline!'), nl,
+	assert(event(X)),
+	assert(event(Y)),
+	assert(X concurrent Y).
+
 add(X concurrent Y):-
 	check_if_event(X),
 	check_if_event(Y),
-	\+X concurrent Y),
+	\+X concurrent Y,
 	\+check_inconsistent(X concurrent Y), % TODO RECURSIVELY
 	add_transitive(X concurrent Y),
 	assert(X concurrent Y).
@@ -74,32 +90,23 @@ check_if_event(Event) :-
 
 %% BEFORE OPERATOR
 add_transitive(X before Y) :-
-	findall(A, X concurrent A, List_A),
-	findall(B, B concurrent X, List_B),
-	append(List_A, List_B, Conc_X),
-	findall(C, Y concurrent C, List_C),
-	findall(D, D concurrent Y, List_D),
-	append(List_C, List_D, Conc_Y),
-	add_trans_list([X|Conc_X] before [Y|Conc_Y]).
+	get_all_concurrent(X, Conc_X),
+	get_all_concurrent(Y, Conc_Y),
+	add_trans_list(Conc_X before Conc_Y).
 
 %% CONCURRENT OPERATOR
 add_transitive(X concurrent Y) :-
-	event(X),
-	\+event(Y), !,
-	assert(event(Y)),
-	findall(A, X concurrent A, List_A),
-	findall(B, B concurrent X, List_B),
-	append(List_A, List_B, Conc_list),
-	add_trans_list(Conc_list concurrent Y),
-	findall(C, C before X, List_C),
-	add_trans_list(List_C before Y),
-	findall(D, X before D, List_D),
-	add_trans_list(Y before List_D).
-
-add_transitive(X concurrent Y) :-
-	event(Y),
-	\+event(X),
-	add_transitive(Y concurrent X).	
+	get_all_concurrent(X, Conc_X),
+	get_all_concurrent(Y, Conc_Y),
+	add_trans_list(Conc_X, Conc_Y),
+	get_all_before(X, Before_X),
+	get_all_before(Y, Before_Y),
+	get_all_after(X, After_X),
+	get_all_after(Y, After_Y),
+	add_trans_list(Before_X before Conc_Y),
+	add_trans_list(Before_Y before Conc_X),
+	add_trans_liset(Conc_Y before After_X),
+	add_trans_list(Conc_X before After_Y).
 
 %%%%%
 %% add_trans_list/1 adds a whole list in the timeline before a certain event.
@@ -112,12 +119,11 @@ add_trans_list([H|Rest] before List) :-
 	add_trans_list(Rest before List).
 
 %% CONCURRENT OPERATOR
-add_trans_list([] concurrent Y) :-
-	\+is_list(Y), !.
+add_trans_list([] concurrent _).
 
-add_trans_list([X|Rest] concurrent Y) :-
-	assert(X concurrent Y),
-	add_trans_list(Rest concurrent Y).
+add_trans_list([H|Rest] concurrent List) :-
+	add_trans_single(H concurrent List),
+	add_trans_list(Rest concurrent List).
 
 %%%%%
 %% add_trans_single/1 recursively adds an event to a list of concurrent events
@@ -126,13 +132,23 @@ add_trans_list([X|Rest] concurrent Y) :-
 add_trans_single(_ before []).
 
 add_trans_single(Event before [H|Rest]) :-
-	\+Event before H, !,
+	\+Event before H,
+	Event \= H, !,
 	assert(Event before H),
 	add_trans_single(Event before Rest).
 
 add_trans_single(Event before [_|Rest]) :-
-	add_trans_single(Event before Rets).
+	add_trans_single(Event before Rest).
 
+%% CONCURRENT OPERATOR
+add_trans_single(_ concurrent []).
+
+add_trans_single(Event concurrent [H|Rest]) :-
+	\+Event concurrent H,
+	Event \= H, !,
+	assert(Event concurrent H),
+	add_trans_single(Event concurrent Rest).
+	
 %%%%%
 %% generate_timelines/1
 
@@ -178,6 +194,18 @@ get_all_concurrent(Event, Result) :-
 	append([Event|List_A], List_B, Temp),
 	sort(Temp, Temp2),
 	flatten(Temp2, Result).
+
+%%%%%
+%% get_all_before/2 gets all events before
+
+get_all_before(Event, Result) :-
+	findall(Before, Before before Event, Result).
+
+%%%%%
+%% get_all_after/2 gets all events after
+
+get_all_after(Event, Result) :-
+	findall(After, Event before After, Result).
 
 %%%%%
 %% list_to_concurrent/2 transforms a list to the concurrent representation
