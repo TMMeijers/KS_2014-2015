@@ -11,3 +11,13 @@
 :- consult('rules.pl').
 
 % for now deleted go1.
+
+
+go1 :-
+	write('Adds wine concurrent to dinner'),
+	add(wine concurrent dinner).
+
+go2 :-
+	write('Tries to put wine before breakfast:'), nl,
+	add(wine before breakfast).
+

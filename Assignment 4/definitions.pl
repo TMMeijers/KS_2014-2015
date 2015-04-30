@@ -14,3 +14,14 @@
 :- dynamic(concurrent/2).
 :- dynamic(or/2).
 :- dynamic(event/1).
+
+
+%%%%%
+%% Adds transitive relations
+
+is_before(X, Y):-
+	X before Y.
+
+is_before(X, Z):-
+	X before Y,
+	is_before(Y, Z).

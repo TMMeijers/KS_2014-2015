@@ -40,7 +40,7 @@ check_inconsistent(X before Y) :-
 	format('CONTRADICTION: ~p and ~p are concurrent!', [Y, X]).
 
 check_inconsistent(X before Y) :-
-	Y before X,
+	is_before(Y, X),
 	format('CONTRADICTION: ~p comes before ~p!', [Y, X]).
 
 check_inconsistent(X concurrent Y) :-
@@ -94,9 +94,7 @@ add(X concurrent Y) :-
 add(X concurrent Y):-
 	check_if_event(X),
 	check_if_event(Y),
-	write(1),
 	\+X concurrent Y,
-	write(test),
 	\+check_inconsistent(X concurrent Y), % TODO RECURSIVELY
 	add_transitive(X concurrent Y).
 
