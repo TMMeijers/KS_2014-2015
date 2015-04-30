@@ -11,7 +11,7 @@
 :- consult('rules.pl').
 
 go1 :-
-	true.
-	%% assert(a before b),
-	%% assert(c while b),
-	%% assert(c meets d). % assert KB
+	write('This will add dessert to the knowledge base'),
+	nl,
+	add(dinner before dessert),
+	add(banana concurrent dessert).
