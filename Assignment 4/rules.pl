@@ -39,7 +39,6 @@ add(X concurrent Y):-
 	add_transitive(X concurrent Y),
 	assert(X concurrent Y).
 
-
 %%%%%
 %% check_if_event/1 checks if something is an event, if not it will be asserted
 
@@ -123,3 +122,40 @@ add_trans_list([] concurrent Y) :-
 add_trans_list([X|Rest] concurrent Y) :-
 	assert(X concurrent Y),
 	add_trans_list(Rest concurrent Y).
+
+%%%%%
+%% generate_timelines/1
+
+generate_timelines(Timelines) :-
+	find_start(Start),
+	find_direct_next(Start, Next)
+
+%%%%%
+%% find_start/1 finds the first element in a timeline (in case of ambiguity variations are generated later)
+
+find_start(Result) :-
+	Start before Next,
+	\+_ before Start, !,
+	findall(Conc1, Conc1 concurrent Start, List_A),
+	findall(Conc2, Start concurrent Conc2, List_B),
+	append(List_A, List_B, Temp),
+	sort(Temp, Conc_List),
+	append([Start], Conc_List, Inter_result),
+	list_to_concurrent(Inter_result, Result), !.
+
+find_start(Result) :-
+	Start concurrent _,
+	findall(Conc1, Conc1 concurrent Start, List_A),
+	findall(Conc2, Start concurrent Conc2, List_B),
+	append(List_A, List_B, Temp),
+	sort(Temp, Conc_List),
+	append([Start], Conc_List, Inter_result),
+	list_to_concurrent(Inter_result, Result), !.
+
+%%%%%
+%% list_to_concurrent/2 transforms a list to the concurrent representation
+
+list_to_concurrent([Last|[]], Last).
+
+list_to_concurrent([H|Rest], H:Result) :-
+	list_to_concurrent(Rest, Result).
