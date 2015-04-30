@@ -22,6 +22,22 @@ loopToEnd(X):-
 	format('~p -> ', [Print]),
 	loopToEnd(Y).
 
+point :-
+	delete,
+	write('Please give input, list with events seperated by comma''s, example:'), nl,
+	write('[breakfast before lunch, lunch before dinner, wine concurrent dinner]'), nl, nl,
+	read(Points),
+	add_points(Points).
+
+add_points([]).
+
+add_points([H|Rest]) :-
+	write('Added: '),
+	write(H), nl,
+	add(H),
+	work_it(Rest).
+	
+
 %%%%%
 %% delete/0 deletes the whole knowledge base
 
@@ -29,7 +45,7 @@ delete :-
 	retractall(event(_)),
 	retractall(_ before _),
 	retractall(_ concurrent _),
-	write('Cleared knowledge base!').
+	write('Cleared knowledge base!'), nl.
 
 %%%%%
 %% check_inconsistent/1 checks if the fact to be added is inconsistent. 
@@ -55,12 +71,14 @@ check_inconsistent(X concurrent Y) :-
 %% add/1 adds events to the timeline if not inconsistent, transitively updates all relations
 
 %% BEFORE OPERATOR
+% if illegally trying to start new timeline
 add(X before Y) :-
 	\+event(X),
 	\+event(Y),
 	event(_), !,
 	write('Cannot start seperate timeline while currently there is one in the knowledge base.'), nl.
 
+% for new timeline
 add(X before Y) :-
 	\+event(X),
 	\+event(Y), !,
@@ -69,6 +87,7 @@ add(X before Y) :-
 	assert(event(Y)),
 	assert(X before Y).
 
+% adding events to existing timeline
 add(X before Y) :-
 	check_if_event(X),
 	check_if_event(Y),
@@ -77,12 +96,14 @@ add(X before Y) :-
 	add_transitive(X before Y).
 
 %% CONCURRENT OPERATOR
+% if illegally trying to start new timeline
 add(X concurrent Y) :-
 	\+event(X),
 	\+event(Y),
 	event(_), !,
 	write('Cannot start seperate timeline while currently there is one in the knowledge base.'), nl.
 
+% for new timelines
 add(X concurrent Y) :-
 	\+event(X),
 	\+event(Y), !,
@@ -91,6 +112,7 @@ add(X concurrent Y) :-
 	assert(event(Y)),
 	assert(X concurrent Y).
 
+% adding events to existing timeline
 add(X concurrent Y):-
 	check_if_event(X),
 	check_if_event(Y),
@@ -181,30 +203,33 @@ add_trans_single(Event concurrent [_|Rest]) :-
 %%%%%
 %% generate_timelines/1
 
-generate_timelines(Timelines) :-
-	find_start(Start),
-	find_direct_next(Start, Next), !.
+generate_timeline(Timelines) :-
+	generate_timeline(Timelines, []).
+
+generate_timeline(Timelines, List) :-
+        find_start(Start),
+	append(List, Start, Current),
+	next_event(Current, Timelines).
+
+%%%%%
+%% next_event/2 finds the next event
 
 %%%%%
 %% find_start/1 finds the first element in a timeline (in case of ambiguity variations are generated later)
 
-find_start(Result) :-
+find_start([Result]) :-
 	Start before _,
 	\+_ before Start,
 	get_all_concurrent(Start, Result), !.
 	 
-find_start(Result) :-
+find_start([Result]) :-
 	Start concurrent _,
 	get_all_concurrent(Start, Result), !.
 
 %%%%%
 %% find_direct_next/2 finds the next event based on the first argument
 
-find_direct_next([Current|_], Next) :-
-	atom(Current),
-	get_next(Current, Next).
-
-find_direct_next(_/[Current|_], Next) :-
+find_direct_next([Current|_], [Next]) :-
 	atom(Current),
 	get_next(Current, Next).
 
