@@ -10,6 +10,10 @@ event(breakfast).
 event(lunch).
 event(dinner).
 
+desert concurrent banana.
+dinner before dessert.
+snack before diner.
 breakfast before lunch.
 lunch before dinner.
-breakfast before dinner.
+lunch concurrent juice.
+

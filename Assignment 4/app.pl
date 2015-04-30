@@ -10,8 +10,4 @@
 :- consult('knowledge_base.pl').
 :- consult('rules.pl').
 
-go1 :-
-	write('This will add dessert to the knowledge base'),
-	nl,
-	add(dinner before dessert),
-	add(banana concurrent dessert).
+% for now deleted go1.

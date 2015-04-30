@@ -30,12 +30,32 @@ check_inconsistent(X concurrent Y) :-
 %% add/1 adds events to the timeline if not inconsistent, transitively updates all relations
 
 add(X before Y) :-
-	\+check_inconsistent(X before Y),
+	\+event(X),
+	\+event(Y),
+	event(_), !,
+	write('Cannot start seperate timeline while currently there is one in the knowledge base.'), nl.
+
+add(X before Y) :-
+	\+event(X),
+	\+event(Y), !,
+	write('Started new timeline!'), nl,
+	assert(event(X)),
+	assert(event(Y)),
+	assert(X before Y).
+
+add(X before Y) :-
+	check_if_event(X),
+	check_if_event(Y),
+	\+X before Y,
+	\+check_inconsistent(X before Y), % TODO RECURSIVELY
 	add_transitive(X before Y),
 	assert(X before Y).
 	
 add(X concurrent Y):-
-	\+check_inconsistent(X concurrent Y),
+	check_if_event(X),
+	check_if_event(Y),
+	\+X concurrent Y),
+	\+check_inconsistent(X concurrent Y), % TODO RECURSIVELY
 	add_transitive(X concurrent Y),
 	assert(X concurrent Y).
 
@@ -54,29 +74,13 @@ check_if_event(Event) :-
 
 %% BEFORE OPERATOR
 add_transitive(X before Y) :-
-	event(X),
-	\+event(Y),
-	assert(event(Y)),
-	write(step1),
 	findall(A, X concurrent A, List_A),
 	findall(B, B concurrent X, List_B),
-	findall(C, C before X, List_C),
-	write(step2),
-	append(List_A, List_B, Temp),
-	append(List_C, Temp, Result_list),
-	write(step3),
-	add_trans_list(Result_list before Y).
-
-add_transitive(X before Y) :-
-	event(Y),
-	\+event(X),
-	assert(event(X)),
-	findall(A, Y concurrent A, List_A),
-	findall(B, B concurrent Y, List_B),
-	findall(C, Y before C, List_C),
-	append(List_A, List_B, Temp),
-	append(List_C, Temp, Result_list),
-	add_trans_list(X before Result_list).
+	append(List_A, List_B, Conc_X),
+	findall(C, Y concurrent C, List_C),
+	findall(D, D concurrent Y, List_D),
+	append(List_C, List_D, Conc_Y),
+	add_trans_list([X|Conc_X] before [Y|Conc_Y]).
 
 %% CONCURRENT OPERATOR
 add_transitive(X concurrent Y) :-
@@ -101,20 +105,12 @@ add_transitive(X concurrent Y) :-
 %% add_trans_list/1 adds a whole list in the timeline before a certain event.
 
 %% BEFORE OPERATOR
-add_trans_list([] before  X) :-
-	\+is_list(X), !.
+add_trans_list([] before _).
 
-add_trans_list([X|Rest] before Y) :-
-	assert(X before Y),
-	add_trans_list(Rest before Y).
+add_trans_list([H|Rest] before List) :-
+	add_trans_single(H before List),
+	add_trans_list(Rest before List).
 
-add_trans_list(X before []) :-
-	\+is_list(X), !.
-
-add_trans_list(X before [Y|Rest]) :-
-	assert(X before Y),
-	add_trans_list(X before Rest).
-		
 %% CONCURRENT OPERATOR
 add_trans_list([] concurrent Y) :-
 	\+is_list(Y), !.
@@ -124,33 +120,64 @@ add_trans_list([X|Rest] concurrent Y) :-
 	add_trans_list(Rest concurrent Y).
 
 %%%%%
+%% add_trans_single/1 recursively adds an event to a list of concurrent events
+
+%% BEFORE OPERATOR
+add_trans_single(_ before []).
+
+add_trans_single(Event before [H|Rest]) :-
+	\+Event before H, !,
+	assert(Event before H),
+	add_trans_single(Event before Rest).
+
+add_trans_single(Event before [_|Rest]) :-
+	add_trans_single(Event before Rets).
+
+%%%%%
 %% generate_timelines/1
 
 generate_timelines(Timelines) :-
 	find_start(Start),
-	find_direct_next(Start, Next)
+	find_direct_next(Start, Next), !.
 
 %%%%%
 %% find_start/1 finds the first element in a timeline (in case of ambiguity variations are generated later)
 
 find_start(Result) :-
-	Start before Next,
-	\+_ before Start, !,
-	findall(Conc1, Conc1 concurrent Start, List_A),
-	findall(Conc2, Start concurrent Conc2, List_B),
-	append(List_A, List_B, Temp),
-	sort(Temp, Conc_List),
-	append([Start], Conc_List, Inter_result),
-	list_to_concurrent(Inter_result, Result), !.
-
+	Start before _,
+	\+_ before Start,
+	get_all_concurrent(Start, Result), !.
+	 
 find_start(Result) :-
 	Start concurrent _,
-	findall(Conc1, Conc1 concurrent Start, List_A),
-	findall(Conc2, Start concurrent Conc2, List_B),
-	append(List_A, List_B, Temp),
-	sort(Temp, Conc_List),
-	append([Start], Conc_List, Inter_result),
-	list_to_concurrent(Inter_result, Result), !.
+	get_all_concurrent(Start, Result), !.
+
+%%%%%
+%% find_direct_next/2 finds the next event based on the first argument
+
+find_direct_next([Current|_], Next) :-
+	atom(Current),
+	get_next(Current, Next).
+
+find_direct_next(_/[Current|_], Next) :-
+	atom(Current),
+	get_next(Current, Next).
+
+get_next(Current, Result) :-
+	Current before Next, !,
+	get_all_concurrent(Next, Result).
+
+get_next(Current, []).
+	
+%%%%%
+%% get_all_concurrent/2 gets all concurrent events
+
+get_all_concurrent(Event, Result) :-
+	findall(Conc1, Conc1 concurrent Event, List_A),
+	findall(Conc2, Event concurrent Conc2, List_B),
+	append([Event|List_A], List_B, Temp),
+	sort(Temp, Temp2),
+	flatten(Temp2, Result).
 
 %%%%%
 %% list_to_concurrent/2 transforms a list to the concurrent representation
