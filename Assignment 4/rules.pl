@@ -9,6 +9,23 @@
 %%%%%
 %% check_inconsistent/1 checks if the fact to be added is inconsistent. 
 
+
+do_timeline :-
+	find_start([X]),
+	format('~p -> ', [X]),
+	loopToEnd(X).
+
+loopToEnd(X):-
+	_ before X,
+	\+ X before _.
+
+loopToEnd(X):-
+	X before Y,
+	get_all_concurrent(Y, Result),
+	list_to_concurrent(Result, Print),
+	format('~p -> ', [Print]),
+	loopToEnd(Y).
+
 check_inconsistent(X before Y) :-
 	Y concurrent X;
 	X concurrent Y,
