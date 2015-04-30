@@ -6,7 +6,10 @@
 %%
 %% This is the knowledge base for timeline reasoning.
 
-event(a).
-event(b).
+event(breakfast).
+event(lunch).
+event(dinner).
 
-a before b.
+breakfast before lunch.
+lunch before dinner.
+breakfast before dinner.
