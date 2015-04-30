@@ -6,6 +6,7 @@
 %%
 %% This is the knowledge base for timeline reasoning.
 
+
 event(breakfast).
 event(lunch).
 event(dinner).
@@ -22,6 +23,8 @@ event(juice).
 
 
 breakfast before lunch.
+breakfast before juice.
 lunch before dinner.
 dinner before dessert.
 juice concurrent lunch.
+juice before dinner.

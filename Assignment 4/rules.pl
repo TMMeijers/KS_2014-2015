@@ -6,10 +6,6 @@
 %%
 %% These are the rules for assignment 4, timeline reasoning.
 
-%%%%%
-%% check_inconsistent/1 checks if the fact to be added is inconsistent. 
-
-
 do_timeline :-
 	find_start([X]),
 	format('~p -> ', [X]),
@@ -25,6 +21,18 @@ loopToEnd(X):-
 	list_to_concurrent(Result, Print),
 	format('~p -> ', [Print]),
 	loopToEnd(Y).
+
+%%%%%
+%% delete/0 deletes the whole knowledge base
+
+delete :-
+	retractall(event(_)),
+	retractall(_ before _),
+	retractall(_ concurrent _),
+	write('Cleared knowledge base!').
+
+%%%%%
+%% check_inconsistent/1 checks if the fact to be added is inconsistent. 
 
 check_inconsistent(X before Y) :-
 	Y concurrent X;
@@ -66,8 +74,7 @@ add(X before Y) :-
 	check_if_event(Y),
 	\+X before Y,
 	\+check_inconsistent(X before Y), % TODO RECURSIVELY
-	add_transitive(X before Y),
-	assert(X before Y).
+	add_transitive(X before Y).
 
 %% CONCURRENT OPERATOR
 add(X concurrent Y) :-
@@ -87,10 +94,11 @@ add(X concurrent Y) :-
 add(X concurrent Y):-
 	check_if_event(X),
 	check_if_event(Y),
+	write(1),
 	\+X concurrent Y,
+	write(test),
 	\+check_inconsistent(X concurrent Y), % TODO RECURSIVELY
-	add_transitive(X concurrent Y),
-	assert(X concurrent Y).
+	add_transitive(X concurrent Y).
 
 %%%%%
 %% check_if_event/1 checks if something is an event, if not it will be asserted
@@ -115,14 +123,14 @@ add_transitive(X before Y) :-
 add_transitive(X concurrent Y) :-
 	get_all_concurrent(X, Conc_X),
 	get_all_concurrent(Y, Conc_Y),
-	add_trans_list(Conc_X, Conc_Y),
+	add_trans_list(Conc_X concurrent Conc_Y),
 	get_all_before(X, Before_X),
 	get_all_before(Y, Before_Y),
 	get_all_after(X, After_X),
 	get_all_after(Y, After_Y),
 	add_trans_list(Before_X before Conc_Y),
 	add_trans_list(Before_Y before Conc_X),
-	add_trans_liset(Conc_Y before After_X),
+	add_trans_list(Conc_Y before After_X),
 	add_trans_list(Conc_X before After_Y).
 
 %%%%%
@@ -162,8 +170,12 @@ add_trans_single(_ concurrent []).
 
 add_trans_single(Event concurrent [H|Rest]) :-
 	\+Event concurrent H,
+	\+H concurrent Event,
 	Event \= H, !,
 	assert(Event concurrent H),
+	add_trans_single(Event concurrent Rest).
+
+add_trans_single(Event concurrent [_|Rest]) :-
 	add_trans_single(Event concurrent Rest).
 	
 %%%%%
@@ -200,7 +212,7 @@ get_next(Current, Result) :-
 	Current before Next, !,
 	get_all_concurrent(Next, Result).
 
-get_next(Current, []).
+get_next(_, []).
 	
 %%%%%
 %% get_all_concurrent/2 gets all concurrent events
