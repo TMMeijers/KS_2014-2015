@@ -20,4 +20,3 @@ go1 :-
 go2 :-
 	write('Tries to put wine before breakfast:'), nl,
 	add(wine before breakfast).
-

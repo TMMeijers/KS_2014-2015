@@ -6,21 +6,54 @@
 %%
 %% These are the rules for assignment 4, timeline reasoning.
 
-do_timeline :-
-	find_start([X]),
-	format('~p -> ', [X]),
-	loopToEnd(X).
+timeline :-
+	setof(S, find_start([S]), Starts),
+	write(Starts), nl, nl,
+	generate_multiple(Starts, Temp),
+	write(Temp), nl,
+	flatten_timelines(Temp, Timelines),
+	write(Timelines), nl, nl,
+	print_multiple(Timelines).
 
-loopToEnd(X):-
-	_ before X,
-	\+ X before _.
+flatten_timelines([H|Rest], Result) :-
+	write(H), nl,
+	flatten_timelines(Rest, Temp),
+	append(H, Temp, Result).
 
-loopToEnd(X):-
-	X before Y,
-	get_all_concurrent(Y, Result),
-	list_to_concurrent(Result, Print),
-	format('~p -> ', [Print]),
-	loopToEnd(Y).
+generate_multiple([], []).
+
+generate_multiple([S|Rest], [Result|Timelines]) :-
+	setof(T, generate(S, T), Result),
+	generate_multiple(Rest, Timelines).
+
+generate(Current, [Result|Timeline]) :-
+	Current before Next,
+	get_all_concurrent(Current, Concurrent),
+	list_to_concurrent(Concurrent, Result),
+	generate(Next, Timeline).
+
+generate(Current, [Result]) :-
+	\+Current before _,
+	get_all_concurrent(Current, Concurrent),
+	list_to_concurrent(Concurrent, Result).
+
+print_multiple([]).
+
+print_multiple([T|Rest]) :-
+	write('START '),
+	print_timeline(T),
+	print_multiple(Rest).
+
+print_timeline([Last|[]]) :-
+	write(Last),
+	write(' END.'), nl.
+
+print_timeline([Event|Rest]) :-
+	length(Rest, N),
+	N \= 0,
+	write(Event),
+	write(' -> '),
+	print_timeline(Rest).
 
 point :-
 	delete,
@@ -35,7 +68,7 @@ add_points([H|Rest]) :-
 	write('Added: '),
 	write(H), nl,
 	add(H),
-	work_it(Rest).
+	add_points(Rest).
 	
 
 %%%%%
@@ -215,14 +248,14 @@ generate_timeline(Timelines, List) :-
 %%%%%
 %% find_start/1 finds the first element in a timeline (in case of ambiguity variations are generated later)
 
-find_start([Result]) :-
+find_start(Result) :-
 	Start before _,
 	\+_ before Start,
-	get_all_concurrent(Start, Result), !.
+	get_all_concurrent(Start, Result).
 	 
-find_start([Result]) :-
+find_start(Result) :-
 	Start concurrent _,
-	get_all_concurrent(Start, Result), !.
+	get_all_concurrent(Start, Result).
 
 %%%%%
 %% find_direct_next/2 finds the next event based on the first argument
