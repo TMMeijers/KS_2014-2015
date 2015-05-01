@@ -10,7 +10,6 @@ timeline :-
 	setof(S, find_start([S]), Starts),
 	generate_multiple(Starts, Temp),
 	flatten_timelines(Temp, Timelines),
-	print_multiple(Timelines),
 	setof(P, permutate_timeline(Timelines, P), Permutated),
 	print_multiple(Permutated).
 
@@ -52,7 +51,6 @@ conc_member(H, [_:Other|Rest]) :-
 	conc_member(H, [Other|Rest]), !.
 
 conc_member(H, [_|Rest]) :-
-	write(Rest), nl,
 	conc_member(H, Rest).
 
 perm_concurrent(Main, H, Hold, New) :-	
