@@ -8,15 +8,78 @@
 
 timeline :-
 	setof(S, find_start([S]), Starts),
-	write(Starts), nl, nl,
 	generate_multiple(Starts, Temp),
-	write(Temp), nl,
 	flatten_timelines(Temp, Timelines),
-	write(Timelines), nl, nl,
-	print_multiple(Timelines).
+	print_multiple(Timelines),
+	setof(P, permutate_timeline(Timelines, P), Permutated),
+	print_multiple(Permutated).
+
+permutate_timeline([Main|Timelines], Permutated) :-
+	join_time(Main, Timelines, Permutated).
+
+join_time(Permutated, [], Permutated).
+
+join_time(Main, [Time|Rest], Permutated) :-
+	scramble(Main, Time, Result),
+	join_time(Result, Rest, Permutated).
+
+scramble(Main, Timelines, Result) :-
+	scramble(Main, Timelines, [], Result).
+
+scramble(Result, [], [], Result) :- !.
+
+scramble(Main, [H|Rest], Hold, Result) :-
+	conc_member(H, Main),
+	\+length(Hold, 0), !,
+	perm_concurrent(Main, H, Hold, Perm),
+	scramble(Perm, Rest, [], Result).
+
+scramble(Main, [H|Rest], [], Result) :-
+	conc_member(H, Main), !,
+	scramble(Main, Rest, [], Result).
+
+scramble(Main, [H|Rest], Hold, Result) :-
+	scramble(Main, Rest, [H|Hold], Result).
+
+conc_member(_, []) :-
+	!, fail.
+
+conc_member(H, [H|_]) :- !.
+
+conc_member(H, [H:_|_]) :- !.
+
+conc_member(H, [_:Other|Rest]) :-
+	conc_member(H, [Other|Rest]), !.
+
+conc_member(H, [_|Rest]) :-
+	write(Rest), nl,
+	conc_member(H, Rest).
+
+perm_concurrent(Main, H, Hold, New) :-	
+	split(Main, H, Before_H, H_after),
+	gen_concurrent(Before_H, Hold, Joined),
+	permutation(Joined, Perm),
+	append(Perm, H_after, New).
+
+gen_concurrent(Result, [], Result) :- !. 
+
+gen_concurrent(Before, Hold, Result) :-
+	append(Before, Hold, Result).
+
+gen_concurrent(Before, [H|Rest], Result) :-
+	permutation(Before, [First|Perm]),
+	gen_concurrent([H:First|Perm], Rest, Result).	
+
+split([H|Rest], H, [], [H|Rest]) :- !.
+
+split([H|Rest], Split, [H|Before], After) :-
+	H \= Split,
+	split(Rest, Split, Before, After).
+	
+
+flatten_timelines([], []).
 
 flatten_timelines([H|Rest], Result) :-
-	write(H), nl,
 	flatten_timelines(Rest, Temp),
 	append(H, Temp, Result).
 
