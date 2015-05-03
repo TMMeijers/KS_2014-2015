@@ -288,7 +288,7 @@ add(X before Y) :-
 	\+event(X),
 	\+event(Y),
 	event(_), !,
-	write('Cannot start seperate timeline while currently there is one in the knowledge base.'), nl.
+	write('Cannot start seperate timeline while currently there is one in the knowledge base.'), nl, !.
 
 % for new timeline
 add(X before Y) :-
@@ -297,7 +297,7 @@ add(X before Y) :-
 	write('Started new timeline!'), nl,
 	assert(event(X)),
 	assert(event(Y)),
-	assert(X before Y).
+	assert(X before Y), !.
 
 % adding events to existing timeline
 add(X before Y) :-
@@ -305,7 +305,7 @@ add(X before Y) :-
 	check_if_event(Y),
 	\+X before Y,
 	\+check_inconsistent(X before Y), % TODO RECURSIVELY
-	add_transitive(X before Y).
+	add_transitive(X before Y), !.
 
 %% CONCURRENT OPERATOR
 % if illegally trying to start new timeline
@@ -313,7 +313,7 @@ add(X concurrent Y) :-
 	\+event(X),
 	\+event(Y),
 	event(_), !,
-	write('Cannot start seperate timeline while currently there is one in the knowledge base.'), nl.
+	write('Cannot start seperate timeline while currently there is one in the knowledge base.'), nl, !.
 
 % for new timelines
 add(X concurrent Y) :-
@@ -322,7 +322,7 @@ add(X concurrent Y) :-
 	write('Started new timeline!'), nl,
 	assert(event(X)),
 	assert(event(Y)),
-	assert(X concurrent Y).
+	assert(X concurrent Y), !.
 
 % adding events to existing timeline
 add(X concurrent Y):-
@@ -330,7 +330,7 @@ add(X concurrent Y):-
 	check_if_event(Y),
 	\+X concurrent Y,
 	\+check_inconsistent(X concurrent Y), % TODO RECURSIVELY
-	add_transitive(X concurrent Y).
+	add_transitive(X concurrent Y), !.
 
 %%%%%
 %% check_if_event/1 checks if something is an event, if not it will be asserted
