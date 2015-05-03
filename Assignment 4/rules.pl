@@ -6,6 +6,9 @@
 %%
 %% These are the rules for assignment 4, timeline reasoning.
 
+%%%%%
+%% timeline/0 generates all possible permutations of a timeline based on current events and relations.
+
 timeline :-
 	setof(S, find_start([S]), Starts),
 	generate_multiple(Starts, Temp),
@@ -13,8 +16,15 @@ timeline :-
 	setof(P, permutate_timeline(Timelines, P), Permutated),
 	print_multiple(Permutated).
 
+%%%%%
+%% permutate_timeline/2 joins all timelines and generates permutations
+%% main is used as the main timeline, the other are joined to the main in join_time/3
+
 permutate_timeline([Main|Timelines], Permutated) :-
 	join_time(Main, Timelines, Permutated).
+
+%%%%%
+%% join_time/3 takes two timelines and generates a possible combination of the two (through scramble/3).
 
 join_time(Permutated, [], Permutated).
 
@@ -22,23 +32,37 @@ join_time(Main, [Time|Rest], Permutated) :-
 	scramble(Main, Time, Result),
 	join_time(Result, Rest, Permutated).
 
+%%%%%
+%% scramble/3 is used to call scramble/4 with an initialised buffer.
+
 scramble(Main, Timelines, Result) :-
 	scramble(Main, Timelines, [], Result).
 
+%%%%%
+%% scramble/4 Takes two timelines, main and an auxillary and generates a possible permutation by
+%% adding all elements of the auxillary timelines. The third argument is the buffer which holds
+%% events that should be added.
+
 scramble(Result, [], [], Result) :- !.
 
-scramble(Main, [H|Rest], Hold, Result) :-
+%% If we have the same event in both lists add the buffer to the main timeline.
+scramble(Main, [H|Rest], Buffer, Result) :-
 	conc_member(H, Main),
 	\+length(Hold, 0), !,
-	perm_concurrent(Main, H, Hold, Perm),
-	scramble(Perm, Rest, [], Result).
+	perm_concurrent(Main, H, Buffer, Perm),
+	scramble(Perm, Rest, [], Result). % reinitialise buffer
 
+%% If we encounter multiple members after another dont add to buffer
 scramble(Main, [H|Rest], [], Result) :-
 	conc_member(H, Main), !,
 	scramble(Main, Rest, [], Result).
 
-scramble(Main, [H|Rest], Hold, Result) :-
-	scramble(Main, Rest, [H|Hold], Result).
+%% If we see new events add them to the buffer
+scramble(Main, [H|Rest], Buffer, Result) :-
+	scramble(Main, Rest, [H|Buffer], Result).
+
+%%%%%
+%% conc_member/2 works like member/2 but also checks concurrent events (notation a:b)
 
 conc_member(_, []) :-
 	!, fail.
@@ -53,11 +77,18 @@ conc_member(H, [_:Other|Rest]) :-
 conc_member(H, [_|Rest]) :-
 	conc_member(H, Rest).
 
+%%%%%
+%% perm_concurrent/4 adds an event to the main timeline. Generates permutations and/or concurrent events.
+%% splits the main list and then uses gen_concurrent to generate different timelines.
+
 perm_concurrent(Main, H, Hold, New) :-	
 	split(Main, H, Before_H, H_after),
 	gen_concurrent(Before_H, Hold, Joined),
 	permutation(Joined, Perm),
 	append(Perm, H_after, New).
+
+%%%%%
+%% gen_concurrent/3 adds an event in the main timeline or makes it concurent
 
 gen_concurrent(Result, [], Result) :- !. 
 
@@ -68,12 +99,17 @@ gen_concurrent(Before, [H|Rest], Result) :-
 	permutation(Before, [First|Perm]),
 	gen_concurrent([H:First|Perm], Rest, Result).	
 
+%%%%%
+%% split/4 splits a list at item H (H is included in the second half).
+
 split([H|Rest], H, [], [H|Rest]) :- !.
 
 split([H|Rest], Split, [H|Before], After) :-
 	H \= Split,
 	split(Rest, Split, Before, After).
 	
+%%%%%
+%% flatten_timelines/2 joins all timelines (lists) in one big list, one level of nesting is removed.
 
 flatten_timelines([], []).
 
@@ -81,11 +117,17 @@ flatten_timelines([H|Rest], Result) :-
 	flatten_timelines(Rest, Temp),
 	append(H, Temp, Result).
 
+%%%%%
+%% generate_multiple/2 generates all possible (seperate) timelines, uses generate/2
+
 generate_multiple([], []).
 
 generate_multiple([S|Rest], [Result|Timelines]) :-
 	setof(T, generate(S, T), Result),
 	generate_multiple(Rest, Timelines).
+
+%%%%%
+%% generate/2 generates a possible (seperate) timeline.
 
 generate(Current, [Result|Timeline]) :-
 	Current before Next,
@@ -98,12 +140,18 @@ generate(Current, [Result]) :-
 	get_all_concurrent(Current, Concurrent),
 	list_to_concurrent(Concurrent, Result).
 
+%%%%%
+%% print_multiple/1 prints all timelines in the list.
+
 print_multiple([]).
 
 print_multiple([T|Rest]) :-
 	write('START '),
 	print_timeline(T),
 	print_multiple(Rest).
+
+%%%%%
+%% print_timeline/1 prints all events in a timelines.
 
 print_timeline([Last|[]]) :-
 	write(Last),
@@ -116,12 +164,19 @@ print_timeline([Event|Rest]) :-
 	write(' -> '),
 	print_timeline(Rest).
 
+%%%%%
+%% point/0 clears the whole knowledgebase and then adds events and relations to the KB based
+%% on the input given by the user.
+
 point :-
 	delete,
 	write('Please give input, list with events seperated by comma''s, example:'), nl,
 	write('[breakfast before lunch, lunch before dinner, wine concurrent dinner]'), nl, nl,
 	read(Points),
 	add_points(Points).
+
+%%%%%
+%% add_points/1 adds all relations between events and gives feedback.
 
 add_points([]).
 
