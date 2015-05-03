@@ -13,6 +13,15 @@
 % for now deleted go1.
 
 
+%%%%%
+%% reload/0 is a helper clause that reloads the original knowledge_base.pl
+
+reload :-
+	delete,
+	write('Reloading original KB.'), nl,
+	consult('knowledge_base.pl').
+
+	
 go1 :-
 	write('This is the current timeline:'), nl,
 	timeline, nl,
@@ -26,7 +35,7 @@ go1 :-
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	%% DEZE ALLEEN ALS HIJ NIET MEER DE OMGEKEERDE GENEREERT!
 	write('When ambiguous data is added, the program will generate all possible timelines,'), nl,
-	write('For instance, when placing water before dessert:'), nl,
+	write('For instance, when placing water before soup:'), nl,
 	add(water before soup),
 	timeline, nl.
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

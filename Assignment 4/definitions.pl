@@ -15,6 +15,11 @@
 :- dynamic(or/2).
 :- dynamic(event/1).
 
+:- discontiguous(before/2).
+:- discontiguous(concurrent/2).
+:- discontiguous(or/2).
+:- discontiguous(event/1).
+
 
 %%%%%
 %% Adds transitive relations

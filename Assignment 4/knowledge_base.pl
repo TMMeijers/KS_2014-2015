@@ -6,7 +6,6 @@
 %%
 %% This is the knowledge base for timeline reasoning.
 
-
 event(breakfast).
 event(lunch).
 event(dinner).

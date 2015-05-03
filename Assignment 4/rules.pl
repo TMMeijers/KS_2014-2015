@@ -13,7 +13,10 @@ timeline :-
 	setof(S, find_start([S]), Starts),
 	generate_multiple(Starts, Temp),
 	flatten_timelines(Temp, Timelines),
+	write('SEPERATE TIMELINES:'), nl,
+	print_multiple(Timelines), nl,
 	setof(P, permutate_timeline(Timelines, P), Permutated),
+	write('ALL POSSIBLE COMBINED TIMELINES:'), nl,
 	print_multiple(Permutated).
 
 %%%%%
@@ -36,30 +39,33 @@ join_time(Main, [Time|Rest], Permutated) :-
 %% scramble/3 is used to call scramble/4 with an initialised buffer.
 
 scramble(Main, Timelines, Result) :-
-	scramble(Main, Timelines, [], Result).
+	scramble(Main, Timelines, [], Result, none_).
 
 %%%%%
 %% scramble/4 Takes two timelines, main and an auxillary and generates a possible permutation by
 %% adding all elements of the auxillary timelines. The third argument is the buffer which holds
 %% events that should be added.
 
-scramble(Result, [], [], Result) :- !.
+scramble(Result, [], [], Result, _) :- !.
+
+scramble(Main, [], Buffer, Result, Add_behind) :-
+	perm_concurrent(Main, none_, Add_behind, Buffer, Result).
 
 %% If we have the same event in both lists add the buffer to the main timeline.
-scramble(Main, [H|Rest], Buffer, Result) :-
+scramble(Main, [H|Rest], Buffer, Result, Add_behind) :-
 	conc_member(H, Main),
-	\+length(Hold, 0), !,
-	perm_concurrent(Main, H, Buffer, Perm),
-	scramble(Perm, Rest, [], Result). % reinitialise buffer
+	\+length(Buffer, 0), !,
+	perm_concurrent(Main, H, Add_behind, Buffer, Perm),
+	scramble(Perm, Rest, [], Result, none_). % reinitialise buffer
 
 %% If we encounter multiple members after another dont add to buffer
-scramble(Main, [H|Rest], [], Result) :-
+scramble(Main, [H|Rest], [], Result, _) :-
 	conc_member(H, Main), !,
-	scramble(Main, Rest, [], Result).
+	scramble(Main, Rest, [], Result, H).
 
 %% If we see new events add them to the buffer
-scramble(Main, [H|Rest], Buffer, Result) :-
-	scramble(Main, Rest, [H|Buffer], Result).
+scramble(Main, [H|Rest], Buffer, Result, Add_behind) :-
+	scramble(Main, Rest, [H|Buffer], Result, Add_behind).
 
 %%%%%
 %% conc_member/2 works like member/2 but also checks concurrent events (notation a:b)
@@ -79,25 +85,116 @@ conc_member(H, [_|Rest]) :-
 
 %%%%%
 %% perm_concurrent/4 adds an event to the main timeline. Generates permutations and/or concurrent events.
-%% splits the main list and then uses gen_concurrent to generate different timelines.
 
-perm_concurrent(Main, H, Hold, New) :-	
-	split(Main, H, Before_H, H_after),
-	gen_concurrent(Before_H, Hold, Joined),
-	permutation(Joined, Perm),
-	append(Perm, H_after, New).
+perm_concurrent(Result, _, _, [], Result) :- !.
+
+perm_concurrent(Main, Add_before, none_, [Insert|Buffer], New) :-
+	!,
+	insert_before(Main, Add_before, Insert, Result),
+	perm_concurrent(Result, Insert, none_, Buffer, New).
+
+perm_concurrent(Main, none_, Add_after, [Insert|Buffer], New) :-
+	!,
+	insert_after(Main, Add_after, Insert, Result),
+	perm_concurrent(Result, Insert, Add_after, Buffer, New).
+
+perm_concurrent(Main, Add_before, Add_after, [Insert|Buffer], New) :-
+	Add_before \= none_,
+	Add_after \= none_, !,
+	insert_between(Main, Add_after, Add_before, Insert, Result),
+	perm_concurrent(Result, Insert, Add_after, Buffer, New).
 
 %%%%%
-%% gen_concurrent/3 adds an event in the main timeline or makes it concurent
+%% insert_before/4 inserts an item before Max, or makes it concurrent with the item. Will generate all permutations
 
-gen_concurrent(Result, [], Result) :- !. 
+%% insert item before max
+insert_before(Main, Max, Elem, Result) :-
+	split(Main, Max, Before, After),
+	append(Before, [Elem], First_half),
+	append(First_half, After, Result).
 
-gen_concurrent(Before, Hold, Result) :-
-	append(Before, Hold, Result).
+%% make concurrent with item before max
+insert_before(Main, Max, Elem, Result) :-
+	nextto(Conc, Max, Main),
+	split(Main, Max, Before, After),
+	select(Conc, Before, Before_min1),
+	make_concurrent(Conc, Elem, Conc_event),
+	append(Before_min1, Conc_event, First_half),
+	append(First_half, After, Result).
 
-gen_concurrent(Before, [H|Rest], Result) :-
-	permutation(Before, [First|Perm]),
-	gen_concurrent([H:First|Perm], Rest, Result).	
+%% moves one element to the front
+insert_before(Main, Max, Elem, Result) :-
+	nextto(Prev, Max, Main), !,
+	insert_before(Main, Prev, Elem, Result).
+
+insert_before(Main, _, Elem, Result) :-
+	append([Elem], Main, Result).
+
+%%%%%
+%% insert_after/4 inserts an item after Min, or generates concurrent events.
+
+insert_after(Main, Min, Elem, Result) :-
+	nextto(Min, Next, Main),
+	split(Main, Next, Before, After),
+	append([Elem], After, Second_half),
+	append(Before, Second_half, Result).
+
+insert_after(Main, Min, Elem, Result) :-
+	nextto(Min, Next, Main),
+	split(Main, Next, Before, After),
+	select(Next, After, After_min1),
+	make_concurrent(Next, Elem, Conc_event),
+	append(Conc_event, After_min1, Second_half),
+	append(Before, Second_half, Result).
+
+insert_after(Main, Min, Elem, Result) :-
+	nextto(Min, Next, Main), !,
+	insert_after(Main, Next, Elem, Result).
+
+insert_after(Main, _, Elem, Result) :-
+	append(Main, [Elem], Result).
+
+%%%%%
+%% insert_between/5 inserts an event (or makes it concurrent) between Min and Max.
+
+insert_between(Main, Min, Max, Elem, Result) :-
+	nextto(Min, Next, Main),
+	Next \= Max,
+	split(Main, Next, Before, Temp),
+	split(Temp, Max, Middle, After),
+	append([Elem], Middle, New_middle),
+	append(Before, New_middle, First_half),
+	append(First_half, After, Result).
+
+insert_between(Main, Min, Max, Elem, Result) :-
+	nextto(Min, Next, Main),
+	Next \= Max,
+	split(Main, Next, Before, Temp),
+	split(Temp, Max, Middle, After),
+	select(Next, Middle, Middle_min1),
+	make_concurrent(Next, Elem, Conc_event),
+	append(Conc_event, Middle_min1, Middle_new),
+	append(Before, Middle_new, First_half),
+	append(First_half, After, Result).
+
+insert_between(Main, Min, Max, Elem, Result) :-
+	nextto(Min, Next, Main),
+	Next \= Max, !,
+	insert_between(Main, Next, Max, Elem, Result).
+
+insert_between(Main, _, Max, Elem, Result) :-
+	split(Main, Max, Before, After),
+	append([Elem], After, Second_half),
+	append(Before, Second_half, Result).
+
+%%%%%
+%% make_concurrent/3 makes Event concurrent with main
+
+make_concurrent(Main, Event, [Main:Event]) :-
+	atom(Main), !.
+
+make_concurrent(H:Rest, Event, [Event:H:Rest]) :-
+	atom(H).
 
 %%%%%
 %% split/4 splits a list at item H (H is included in the second half).
