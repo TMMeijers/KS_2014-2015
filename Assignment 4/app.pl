@@ -14,9 +14,43 @@
 
 
 go1 :-
-	write('Adds wine concurrent to dinner'),
-	add(wine concurrent dinner).
+	write('This is the current timeline:'), nl,
+	timeline, nl,
+	write('First we will add wine concurrent to dinner:'), nl,
+	add(wine concurrent dinner),
+	timeline, nl,
+	write('Then we will put soup in between lunch and dinner'), nl,
+	add(lunch before soup), add(soup before dinner),
+	timeline, nl,
+
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	%% DEZE ALLEEN ALS HIJ NIET MEER DE OMGEKEERDE GENEREERT!
+	write('When ambiguous data is added, the program will generate all possible timelines,'), nl,
+	write('For instance, when placing water before dessert:'), nl,
+	add(water before soup),
+	timeline, nl.
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 go2 :-
-	write('Tries to put wine before breakfast:'), nl,
-	add(wine before breakfast).
+	write('The system handles contradications:'), nl,
+	write('add(lunch before breakfast)'), nl,
+	add(lunch before breakfast), nl, nl.
+
+go3 :-
+	write('This also works on transitive contradictions:'), nl,
+	write('add(dessert before breakfast)'), nl,
+	add(dessert before breakfast).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
