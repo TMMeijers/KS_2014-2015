@@ -7,19 +7,6 @@
 %% These are the rules for assignment 4, timeline reasoning.
 
 %%%%%
-%% timeline/0 generates all possible permutations of a timeline based on current events and relations.
-
-timeline :-
-	setof(S, find_start([S]), Starts),
-	generate_multiple(Starts, Temp),
-	flatten_timelines(Temp, Timelines),
-	write('SEPERATE TIMELINES:'), nl,
-	print_multiple(Timelines), nl,
-	setof(P, permutate_timeline(Timelines, P), Permutated),
-	write('ALL POSSIBLE COMBINED TIMELINES:'), nl,
-	print_multiple(Permutated).
-
-%%%%%
 %% permutate_timeline/2 joins all timelines and generates permutations
 %% main is used as the main timeline, the other are joined to the main in join_time/3
 
@@ -262,17 +249,6 @@ print_timeline([Event|Rest]) :-
 	print_timeline(Rest).
 
 %%%%%
-%% point/0 clears the whole knowledgebase and then adds events and relations to the KB based
-%% on the input given by the user.
-
-point :-
-	delete,
-	write('Please give input, list with events seperated by comma''s, example:'), nl,
-	write('[breakfast before lunch, lunch before dinner, wine concurrent dinner]'), nl, nl,
-	read(Points),
-	add_points(Points).
-
-%%%%%
 %% add_points/1 adds all relations between events and gives feedback.
 
 add_points([]).
@@ -283,16 +259,6 @@ add_points([H|Rest]) :-
 	add(H),
 	add_points(Rest).
 	
-
-%%%%%
-%% delete/0 deletes the whole knowledge base
-
-delete :-
-	retractall(event(_)),
-	retractall(_ before _),
-	retractall(_ concurrent _),
-	write('Cleared knowledge base!'), nl.
-
 %%%%%
 %% check_inconsistent/1 checks if the fact to be added is inconsistent. 
 
