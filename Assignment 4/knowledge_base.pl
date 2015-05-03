@@ -12,15 +12,6 @@ event(dinner).
 event(desert).
 event(juice).
 
-%% desert concurrent banana.
-%% dinner before dessert.
-%% snack before dinner.
-%% breakfast before lunch.
-%% lunch before dinner.
-%% lunch concurrent juice.
-
-
-
 breakfast before lunch.
 breakfast before juice.
 lunch before dinner.

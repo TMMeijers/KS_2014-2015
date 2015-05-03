@@ -41,7 +41,7 @@ timeline :-
 	print_multiple(Timelines), nl,
 	setof(P, permutate_timeline(Timelines, P), Permutated),
 	write('ALL POSSIBLE COMBINED TIMELINES:'), nl,
-	print_multiple(Permutated).
+	print_multiple(Permutated), !.
 
 %%%%%
 %% point/0 clears the whole knowledgebase and then adds events and relations to the KB based
@@ -75,7 +75,7 @@ go1 :-
 	write('When ambiguous data is added, the program will generate all possible timelines,'), nl,
 	write('For instance, when placing water before soup:'), nl,
 	add(water before soup),
-	timeline, nl.
+	timeline, nl, !.
 
 go2 :-
 	write('The system handles contradications:'), nl,
@@ -83,7 +83,7 @@ go2 :-
 	\+add(lunch before breakfast), nl, nl,
 	write('This also works on transitive contradictions:'), nl,
 	write('add(dessert before breakfast)'), nl,
-	\+add(dessert before breakfast).
+	\+add(dessert before breakfast), !.
 
 go3 :-
 	write('The system handles complex timelines like a zigzagging one:'), nl,
@@ -93,7 +93,7 @@ go3 :-
 	add(c before b),
 	add(c before d),
 	add(e before d),
-	timeline.
+	timeline, !.
 
 go4 :-
 	write('Adding loops to the previous timeline can decrease the number of possibilities again:'), nl,
@@ -101,7 +101,7 @@ go4 :-
 	add(c before a),
 	write('add(e before a).'), nl,
 	add(e before a),
-	timeline.
+	timeline, !.
 
 go5 :-
 	write('Our reasoner handles complex timelines that join, split and loop again.'), nl,
@@ -118,4 +118,4 @@ go5 :-
 	timeline,
 	write('Scroll up for all the timelines, as can be seen, we can generate A LOT of'), nl,
 	write('timelines with just 8 events'), nl,
-	write('Try for yourself with point/0 or add/1!').
+	write('Try for yourself with point/0 or add/1!'), !.
