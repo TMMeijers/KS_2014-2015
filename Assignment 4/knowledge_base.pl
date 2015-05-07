@@ -9,7 +9,7 @@
 event(breakfast).
 event(lunch).
 event(dinner).
-event(desert).
+event(dessert).
 event(juice).
 
 breakfast before lunch.
