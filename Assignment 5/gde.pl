@@ -14,11 +14,12 @@
 
 load_model :-
 	write('Loading all components...'), nl,
-	components(Comps),
-	format('Components loaded: ~p.~n~n', [Comps]),
+	components(Components),
+	format('Components loaded: ~p.~n~n', [Components]),
 	write('Asserting correct model, forward chaining...'), nl,
-	assert_model_forward(Comps), nl,
-	conflict_recognition(Min_conflict_set).
+	assert_model_forward(Components), nl,
+	conflict_recognition(Conflict_set),
+	candidate_generation(Conflict_set, Candidates).
 
 %%%%
 %% assert_model_forward/1 uses forward chaining to make predictions based on the input.
@@ -26,8 +27,8 @@ load_model :-
 
 assert_model_forward([]).
 
-assert_model_forward([Comp|Rest]) :-
-	forward_inference(Comp),
+assert_model_forward([Component|Rest]) :-
+	forward_inference(Component),
 	assert_model_forward(Rest).
 
 %%%%%
@@ -79,12 +80,41 @@ forward_inference(Component) :-
 	assert(Component predicts Output). % Since this simulates the correct model
 
 %%%%%
-%% backward_inference/4 can give inputs based on the output. Can of course also be used for forward inference.
+%% backward_inference/4 can give inputs based on the output. Can of course also be used for forward inference
 
-backward_inference(Comp, In1, In2, Out) :-
-	sub_atom(Comp, 0, 1, _, a),
+backward_inference(Component, In1, In2, Out) :-
+	sub_atom(Component, 0, 1, _, a),
 	adder(In1, In2, Out).
 
-backward_inference(Comp, In1, In2, Out) :-
-	sub_atom(Comp, 0, 1, _, m),
+backward_inference(Component, In1, In2, Out) :-
+	sub_atom(Component, 0, 1, _, m),
 	multiplier(In1, In2, Out).
+
+%%%%%
+%% conflict_recognition/1 returns the minimum conflict set, it starts probing at the output nodes
+
+conflict_recognition(Conflict_set) :-
+	componenets(Comps),
+	reverse(Comps, Components), % reverse so we start at output nodes
+	conflict_recognition(Components, Conflict_set).
+
+%%%%%
+%% conflict_recognition/2 checks per component if it should be included in the minimum conflict set
+
+conflict_recognition([], []).
+
+conflict_recognition([Component|Rest], Result) :-
+	Component predicts Correct,
+	Component ouputs Output,
+	Correct =:= Output, !,
+	format('~p outputs ~p as expected.~n', [Component, Correct]),
+	conflict_recognition(Rest, Result).
+
+conflict_recognition([Component|Rest], [Component|Result]) :-
+	Component predicts Correct.
+
+%%%%%
+%% candidate_generation/1 generates candidates based on the minimum conflict set.
+
+candidate_generation([], []) :- !,
+	write('Empty conflict set, the systems exhibits no faulty outputs.'), nl, nl.
