@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<catalog prefer="public" xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">
+    <group id="Folder Repository, directory=, recursive=true, Auto-Update=true, version=2" prefer="public" xml:base="">
+        <uri id="Automatically generated entry, Timestamp=1432222077770" name="http://www.semanticweb.org/t.m.meijers/ontologies/2015/4/KS_new" uri="KS_new.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1432222077770" name="http://www.semanticweb.org/t.m.meijers/ontologies/2015/4/KS_voertuigen" uri="KS_ass6_meijers_vranken.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1432222077770" name="http://www.semanticweb.org/t.m.meijers/ontologies/2015/4/test" uri="justtobesure.owl"/>
+    </group>
+</catalog>

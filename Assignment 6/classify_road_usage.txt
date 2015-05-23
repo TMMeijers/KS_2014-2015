@@ -1,0 +1,10 @@
+% Kennissystemen assignment 6
+% Thomas Meijers & Jeroen vranken
+
+% Answer to point 3: Classifying road usage:
+
+De methode die wij probeerden toe te passen was het instellen van een minimumsnelheid op de wegen samen met de breeddte van de wegen
+om dit beter te laten verlopen voor het classificeren van gehandicaptenvoertuigen en fietsen. Het probleem wat wij hiermee hadden was
+dat door het toevoegen van snelheden bij de voertuigen en wegen we conflicten kregen (in ieder geval, dat denken we. Het programma is
+zo ongeveer 23141 keer vastgelopen en geeft geen feedback). Uiteindelijk hebben we het concept snelheid van alle klasses verwijderd,
+maar naar onze mening zou het ongeveer zo moeten werken.
