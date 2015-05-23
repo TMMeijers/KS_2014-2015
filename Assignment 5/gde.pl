@@ -100,8 +100,10 @@ conflict_recognition(Conflict_set) :-
 
 %%%%%
 %% conflict_recognition/2 checks per component if it should be included in the minimum conflict set
+%% as discussed in class, we are assuming that only one component is faulty. So when faulty output it
+%% found we will return the minimum conflict set.
 
-conflict_recognition([], []).
+conflict_recognition([], []) :- !.
 
 conflict_recognition([Component|Rest], Result) :-
 	Component predicts Correct,
@@ -110,11 +112,34 @@ conflict_recognition([Component|Rest], Result) :-
 	format('~p outputs ~p as expected.~n', [Component, Correct]),
 	conflict_recognition(Rest, Result).
 
-conflict_recognition([Component|Rest], [Component|Result]) :-
-	Component predicts Correct.
+conflict_recognition([Component|Rest], Result) :-
+	Component predicts Correct,
+	Component outputs Output,
+	format('FAULT: ~p outputs ~p, expected ~p.~n', [Component, Output, Correct]),
+	generate_conflict_set(Component, Result).
 
 %%%%%
-%% candidate_generation/1 generates candidates based on the minimum conflict set.
+%% generate_conflict_set/2 returns the minimum conflict set based on the given component
+
+generate_conflict_set(Component, Result) :-
+	setof(C, C in Component, Temp),
+	filter_inputs(Temp, Filtered),
+	append([Component], Filtered, Result).
+
+%%%%%
+%% filter_inputs/2 filters the inputs out of the list
+
+filter_inputs([], []).
+
+filter_inputs([H|Rest], Result) :-
+	number(H), !,
+	filter_inputs(Rest, Result).
+
+filter_inputs([H|Rest], [H|Result]) :-
+	filter_inputs(Rest, Result).
+	
+%%%%%
+%% candidate_generation/1 generates candidates based on the minimum conflict set
 
 candidate_generation([], []) :- !,
 	write('Empty conflict set, the systems exhibits no faulty outputs.'), nl, nl.
