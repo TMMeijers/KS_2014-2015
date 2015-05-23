@@ -19,7 +19,10 @@ load_model :-
 	write('Asserting correct model, forward chaining...'), nl,
 	assert_model_forward(Components), nl,
 	conflict_recognition(Conflict_set),
-	candidate_generation(Conflict_set, Candidates).
+	format('Found the following minimum conflict set: ~p.~n~n', [Conflict_set]),
+	candidate_generation(Conflict_set, Candidates),
+	format('Determining probe points...'),
+	probe_points(Candidates).
 
 %%%%
 %% assert_model_forward/1 uses forward chaining to make predictions based on the input.
@@ -103,16 +106,16 @@ conflict_recognition(Conflict_set) :-
 %% as discussed in class, we are assuming that only one component is faulty. So when faulty output it
 %% found we will return the minimum conflict set.
 
-conflict_recognition([], []) :- !.
+conflict_recognition([], []).
 
 conflict_recognition([Component|Rest], Result) :-
 	Component predicts Correct,
-	Component ouputs Output,
+	Component outputs Output,
 	Correct =:= Output, !,
 	format('~p outputs ~p as expected.~n', [Component, Correct]),
 	conflict_recognition(Rest, Result).
 
-conflict_recognition([Component|Rest], Result) :-
+conflict_recognition([Component|_], Result) :-
 	Component predicts Correct,
 	Component outputs Output,
 	format('FAULT: ~p outputs ~p, expected ~p.~n', [Component, Output, Correct]),
@@ -143,3 +146,72 @@ filter_inputs([H|Rest], [H|Result]) :-
 
 candidate_generation([], []) :- !,
 	write('Empty conflict set, the systems exhibits no faulty outputs.'), nl, nl.
+
+candidate_generation(Candidates, Result) :-
+	check_conflicts(Candidates, [Contradictions], Conflicts),
+	format('~n~nExpanding ~p with the new conflict set:~p.~n~n', [Contradictions, Conflicts]),
+	format('Eliminating...~n'),
+	make_superset(Contradictions, Conflicts, Result, Candidates),
+	format('Generated the following minimal candidate sets: ~p~n~n', [Result]).
+
+%%%%%
+%% make_superset/4 expands the new element with all the conflict sets
+
+make_superset(_, [], [], _).
+
+make_superset(Contradict, [Conflict|Rest], [[Contradict, Conflict]|Result], Candidates) :-
+	\+member(Conflict, Candidates), !,
+	make_superset(Contradict, Rest, Result, Candidates).
+
+make_superset(Contradict, [Conflict|Rest], [[Conflict]|Result], Candidates) :-
+	make_superset(Contradict, Rest, Result, Candidates).
+
+%%%%%
+%% check_conflicts/3 returns the new minimal candidates, keeps track of componenets
+%% no longer explaining all the outputs.
+
+check_conflicts([], [], []) :- !.
+
+check_conflicts([C|Rest], Contradictions, [C|Conflicts]) :-
+	format('~nChecking ~p', [C]),
+	setof(Next, C in Next, Inputs),
+	no_contradiction(Inputs), !,
+	format(', not inconsistent, added to new conflict set.'),
+	check_conflicts(Rest, Contradictions, Conflicts).
+
+check_conflicts([C|Rest], [C|Contradictions], [New, New_input|Conflicts]) :-
+	format('~nChecking ~p', [C]),
+	setof(Next, C in Next, Check_comps), !,
+	find_correct(Check_comps, New),
+	format(', contradiction! ~p produces inconsistent output.~n', [New]),
+	setof(In, In in New, Inputs),
+	select(C, Inputs, [New_input]),
+	format('Added ~p to contradictions (not explaining all faults),~nAdded ~p and ~p to the new conflict set.', [C, New, New_input]),
+	check_conflicts(Rest, Contradictions, Conflicts).	
+
+check_conflicts([C|Rest], Contradictions, [C|Conflicts]) :-
+	format('~nChecking ~p, not inconsistent, added to new conflict set.', [C]),
+	\+C in _,
+	check_conflicts(Rest, Contradictions, Conflicts).
+
+%%%%%
+%% find_correct/2 returns components with correct output, our system only has binary input / output
+	
+find_correct([C|_], C) :-
+	C outputs Output,
+	C predicts Correct,
+	Output =:= Correct, !.
+	     
+find_correct([_|[Rest]], Rest).
+		
+	
+%%%%%
+%% no_contradiction/1 checks if nothing contradicts (we expect faulty output!)
+
+no_contradiction([]).
+
+no_contradiction([Comp|Rest]) :-
+	Comp outputs Output,
+	Comp predicts Correct,
+	Output =\= Correct,
+	no_contradiction(Rest).
