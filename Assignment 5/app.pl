@@ -17,3 +17,7 @@
 go1 :-
 	load_system1,
 	load_model.
+
+go2 :-
+	load_system2,
+	load_model.

@@ -32,4 +32,4 @@ multiplier_working(0.9994).
 
 multiplier(In1, In2, Output) :-
 	Output is In1 * In2.
-	
+

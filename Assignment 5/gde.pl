@@ -217,25 +217,74 @@ no_contradiction([Comp|Rest]) :-
 	no_contradiction(Rest).
 
 %%%%%
-%% probe_points/1
+%% probe_points/1 determines probe points and then probes
 
 probe_points(Candidates) :-
-	calc_probs(Candidates, Probs),
-	sort_probs(Probs, Sorted).
-	write(Sorted).
+	calc_probs(Candidates, Probs, Pure_probs),
+	sort(Pure_probs, Sorted_probs),
+	sort_probs(Probs, Sorted_probs, Rev),
+	reverse(Rev, Sorted),
+	format('Probing candidates in the following order: ~p.~n~n', [Sorted]),
+	format('Probing...~n'),
+	probe(Sorted).
 
-sort_probs()
+%%%%%
+%% probe/1 probes the probe points in the given order
 
+probe([]) :- !.
 
+probe([Set|Rest]) :-
+	format('Probing the following candidate set: ~p.~n', [Set]),
+	probe_candidate(Set, work), !,
+	probe(Rest).
 
-calc_probs([], []).
+probe([Set|_]) :- 
+	probe_candidate(Set, fault),
+	format('Please replace the faulty component, thanks for using GDE.~n~n').
 
-calc_probs([H|Candidates], [H:Prob|Result]):-
+probe_candidate([], work) :- !.
+
+probe_candidate([C|Rest], Working) :-
+	C predicts Correct,
+	C outputs Output,
+	Correct =:= Output, !,
+	format('~p functioning normally.~n', [C]),
+	probe_candidate(Rest, Working).
+
+probe_candidate([C|_], fault) :-
+	format('FAULTY COMPONENT FOUND: ~p!~n', [C]).
+
+%%%%%
+%% sort_probs/3 sorts the set of candidate lists
+
+sort_probs(_, [], []) :- !.
+
+sort_probs(Candidates, [Lowest|Rest], [Set|Result]) :-
+	get_lowest_set(Candidates, Lowest, Set),
+	sort_probs(Candidates, Rest, Result).
+
+%%%%%
+%% get_lowest_set/3 returns the candidate set corresponding to the prob.
+
+get_lowest_set([C:Prob|_], Prob, C) :- !.
+
+get_lowest_set([_|Rest], Prob, C) :-
+	get_lowest_set(Rest, Prob, C).
+
+%%%%%
+%% calc_probs/3 calculdates probabilities of candidate sets
+
+calc_probs([], [], []).
+
+calc_probs([H|Candidates], [H:Prob|Result], [Prob|Probs]):-
 	components(Comps),
 	filter_comps(H, Comps, Filtered),
 	candidate_prob(H, Filtered, 1, Prob),
 	format('The probability of ~p being faulty is: ~p~n', [H, Prob]),
-	calc_probs(Candidates, Result).
+	calc_probs(Candidates, Result, Probs).
+
+%%%%%
+%% filter_comps/3 filters the list of components of faulty components
 
 filter_comps(_, [], []) :- !.
 
@@ -245,6 +294,9 @@ filter_comps(Candidates, [C|Rest], Result) :-
 
 filter_comps(Candidates, [C|Rest], [C|Result]) :-
 	filter_comps(Candidates, Rest, Result).
+
+%%%%%
+%% candidate_prob/4 calculates the probability
 
 candidate_prob([], Working, Current, Result) :-
 	multiply_good(Working, Current, Result).
@@ -260,6 +312,9 @@ candidate_prob([H|Rest], Working_comps, Current, Result):-
 	adder_fault(Value),
 	Current_prob is Current * Value,
 	candidate_prob(Rest, Working_comps, Current_prob, Result).
+
+%%%%%
+%% multiply_good/3 multiplies prob with prob of the working components
 
 multiply_good([], Result, Result) :- !.
 
