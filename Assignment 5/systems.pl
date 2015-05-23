@@ -9,6 +9,11 @@
 %%
 %% Systems.pl describes the two systems used for this assignment. System1 is the default GDE system used
 %% in the examples. System 2 is the system consisting of 10 modules.
+%%
+%% The way we determine the probing points is that we calculate the probability of a certain candidate
+%% set containing the faulty component. The sets with the highest probability are probed the first.
+%% This way ensures that all sets containing only a single component will be probed first (unless the
+%% failure rates are really skewed). This method is according to the method presented in the lecture slides.
 
 %%%%%
 %% OPERATORS
