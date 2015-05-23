@@ -32,7 +32,7 @@ assert_model_forward([Component|Rest]) :-
 	assert_model_forward(Rest).
 
 %%%%%
-%% forward_inference/1 reasons about componenets and the output they should have. This is used
+%% forward_inference/1 reasons about components and the output they should have. This is used
 %% as the default correct input (the default non-faulty model)
 
 forward_inference(Component):-
@@ -94,7 +94,7 @@ backward_inference(Component, In1, In2, Out) :-
 %% conflict_recognition/1 returns the minimum conflict set, it starts probing at the output nodes
 
 conflict_recognition(Conflict_set) :-
-	componenets(Comps),
+	components(Comps),
 	reverse(Comps, Components), % reverse so we start at output nodes
 	conflict_recognition(Components, Conflict_set).
 
