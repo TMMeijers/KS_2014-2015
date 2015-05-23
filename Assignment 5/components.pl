@@ -13,7 +13,8 @@
 %%%%%
 %% adder_fault/1 is the faulting chance of the adder module as specified by the manufacturer
 
-adder_fault(0.1).
+adder_fault(0.0004).
+adder_working(0.9996).
 
 %%%%%
 %% adder/3 is the adder module
@@ -24,8 +25,8 @@ adder(In1, In2, Output) :-
 %%%%%
 %% multiplier_fault/1 is the faulting chance of the multiplier module as specified by the manufacturer
 
-multiplier_fault(0.1).
-
+multiplier_fault(0.0006).
+multiplier_working(0.9994).
 %%%%%
 %% multiplier/3 is the multiplier module
 

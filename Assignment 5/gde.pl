@@ -21,7 +21,7 @@ load_model :-
 	conflict_recognition(Conflict_set),
 	format('Found the following minimum conflict set: ~p.~n~n', [Conflict_set]),
 	candidate_generation(Conflict_set, Candidates),
-	format('Determining probe points...'),
+	write('Determining probe points...'), nl,
 	probe_points(Candidates).
 
 %%%%
@@ -215,3 +215,85 @@ no_contradiction([Comp|Rest]) :-
 	Comp predicts Correct,
 	Output =\= Correct,
 	no_contradiction(Rest).
+
+%%%%%
+%% probe_points/1
+
+probe_points(Candidates) :-
+	calc_probs(Candidates, Probs),
+	sort_probs(Probs, Sorted).
+	write(Sorted).
+
+sort_probs()
+
+
+
+calc_probs([], []).
+
+calc_probs([H|Candidates], [H:Prob|Result]):-
+	components(Comps),
+	filter_comps(H, Comps, Filtered),
+	candidate_prob(H, Filtered, 1, Prob),
+	format('The probability of ~p being faulty is: ~p~n', [H, Prob]),
+	calc_probs(Candidates, Result).
+
+filter_comps(_, [], []) :- !.
+
+filter_comps(Candidates, [C|Rest], Result) :-
+	member(C, Candidates), !,
+	filter_comps(Candidates, Rest, Result).
+
+filter_comps(Candidates, [C|Rest], [C|Result]) :-
+	filter_comps(Candidates, Rest, Result).
+
+candidate_prob([], Working, Current, Result) :-
+	multiply_good(Working, Current, Result).
+
+candidate_prob([H|Rest], Working_comps, Current, Result):-
+	sub_atom(H, 0, 1, _, m),
+	multiplier_fault(Value),
+	Current_prob is Current * Value,
+	candidate_prob(Rest, Working_comps, Current_prob, Result).
+
+candidate_prob([H|Rest], Working_comps, Current, Result):-
+	sub_atom(H, 0, 1, _, a),
+	adder_fault(Value),
+	Current_prob is Current * Value,
+	candidate_prob(Rest, Working_comps, Current_prob, Result).
+
+multiply_good([], Result, Result) :- !.
+
+multiply_good([C|Rest], Current, Result) :-
+	sub_atom(C, 0, 1, _, m),
+	multiplier_working(Value),
+	New is Value * Current,
+	multiply_good(Rest, New, Result).
+
+
+multiply_good([C|Rest], Current, Result) :-
+	sub_atom(C, 0, 1, _, a),
+	adder_working(Value),
+	New is Value * Current,
+	multiply_good(Rest, New, Result).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
